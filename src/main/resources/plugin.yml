@@ -1,0 +1,5 @@
+name: mmorpg
+version: '1.0-SNAPSHOT'
+main: net.tinhvv.mmorpg.Mmorpg
+api-version: '1.21.5'
+authors: [ tinhvv ]
