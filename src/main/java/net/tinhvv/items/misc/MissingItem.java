@@ -1,4 +1,4 @@
-package net.tinhvv.items.Misc;
+package net.tinhvv.items.misc;
 
 import net.tinhvv.items.AbstractCustomItem;
 import org.bukkit.ChatColor;
@@ -6,15 +6,15 @@ import org.bukkit.Material;
 
 import java.util.List;
 
-public class CloseItem extends AbstractCustomItem {
+public class MissingItem extends AbstractCustomItem {
 
-    public CloseItem() {
-        super("close_item", Material.BARRIER, "close_item");
+    public MissingItem() {
+        super("missing_item", Material.WHITE_STAINED_GLASS_PANE, "missing_item");
     }
 
     @Override
     protected String getDisplayName() {
-        return ChatColor.RED + "" + ChatColor.BOLD + "Close";
+        return ChatColor.WHITE + "Missing Item";
     }
 
     @Override

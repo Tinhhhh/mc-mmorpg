@@ -1,4 +1,4 @@
-package net.tinhvv.listeners.Interact;
+package net.tinhvv.listeners.interact;
 
 import net.tinhvv.items.AbstractCustomItem;
 import net.tinhvv.items.CustomItemRegistry;
@@ -9,7 +9,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {

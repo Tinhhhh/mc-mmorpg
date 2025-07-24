@@ -3,7 +3,7 @@ package net.tinhvv.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
-import net.tinhvv.items.EasterEgg.GoblinEgg;
+import net.tinhvv.items.easterEgg.GoblinEgg;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

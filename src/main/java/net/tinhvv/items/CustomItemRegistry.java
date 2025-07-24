@@ -1,8 +1,8 @@
 package net.tinhvv.items;
 
-import net.tinhvv.items.EasterEgg.GoblinEgg;
-import net.tinhvv.items.Misc.EmptySlotItem;
-import net.tinhvv.items.Misc.MenuItem;
+import net.tinhvv.items.easterEgg.GoblinEgg;
+import net.tinhvv.items.misc.EmptySlotItem;
+import net.tinhvv.items.misc.MenuItem;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;

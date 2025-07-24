@@ -1,9 +1,8 @@
-package net.tinhvv.listeners.Drop;
+package net.tinhvv.listeners.drop;
 
 import net.tinhvv.items.CustomItemRegistry;
 import net.tinhvv.listeners.EventRouter;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 

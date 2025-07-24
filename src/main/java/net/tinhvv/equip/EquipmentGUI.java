@@ -1,8 +1,8 @@
 package net.tinhvv.equip;
 
 import net.tinhvv.items.ItemBuilder;
-import net.tinhvv.items.Misc.EmptySlotItem;
-import net.tinhvv.items.Misc.MissingItem;
+import net.tinhvv.items.misc.EmptySlotItem;
+import net.tinhvv.items.misc.MissingItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -46,7 +46,8 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
-                    <outputDirectory>C:\Users\TINH KHUNG\Documents\game-project\Minecraft-server\Spigot Server\plugins</outputDirectory>
+                    <outputDirectory>C:\Users\TINH KHUNG\Documents\game-project\Minecraft-server\Spigot Server\plugins
+                    </outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
@@ -59,6 +60,10 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -90,6 +95,12 @@
             <groupId>co.aikar</groupId>
             <artifactId>acf-bukkit</artifactId>
             <version>0.5.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.MinusKube</groupId>
+            <artifactId>SmartInvs</artifactId>
+            <version>master-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

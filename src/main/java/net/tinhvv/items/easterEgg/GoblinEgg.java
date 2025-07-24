@@ -1,4 +1,4 @@
-package net.tinhvv.items.EasterEgg;
+package net.tinhvv.items.easterEgg;
 
 import net.tinhvv.items.AbstractCustomItem;
 import net.tinhvv.items.CustomItemRegistry;

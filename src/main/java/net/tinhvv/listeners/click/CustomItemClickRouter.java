@@ -1,13 +1,10 @@
-package net.tinhvv.listeners.Click;
+package net.tinhvv.listeners.click;
 
 import net.tinhvv.items.AbstractCustomItem;
 import net.tinhvv.items.CustomItemRegistry;
 import net.tinhvv.listeners.EventRouter;
-import net.tinhvv.mmorpg.Mmorpg;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 

@@ -1,12 +1,9 @@
-package net.tinhvv.items.Misc;
+package net.tinhvv.items.misc;
 
 import net.tinhvv.items.AbstractCustomItem;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class EmptySlotItem extends AbstractCustomItem {
 

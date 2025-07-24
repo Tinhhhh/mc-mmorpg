@@ -1,4 +1,4 @@
-package net.tinhvv.listeners.Swap;
+package net.tinhvv.listeners.swap;
 
 import net.tinhvv.items.CustomItemRegistry;
 import net.tinhvv.listeners.EventRouter;

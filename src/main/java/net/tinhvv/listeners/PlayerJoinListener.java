@@ -1,6 +1,6 @@
 package net.tinhvv.listeners;
 
-import net.tinhvv.items.Misc.MenuItem;
+import net.tinhvv.items.misc.MenuItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

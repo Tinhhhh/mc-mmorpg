@@ -1,10 +1,10 @@
 package net.tinhvv.listeners;
 
-import net.tinhvv.listeners.Click.CustomItemClickRouter;
-import net.tinhvv.listeners.Click.EquipmentClickRouter;
-import net.tinhvv.listeners.Drop.CustomItemDrop;
-import net.tinhvv.listeners.Interact.CustomItemInteract;
-import net.tinhvv.listeners.Swap.CustomItemSwap;
+import net.tinhvv.listeners.click.CustomItemClickRouter;
+import net.tinhvv.listeners.click.EquipmentClickRouter;
+import net.tinhvv.listeners.drop.CustomItemDrop;
+import net.tinhvv.listeners.interact.CustomItemInteract;
+import net.tinhvv.listeners.swap.CustomItemSwap;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;

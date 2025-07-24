@@ -1,4 +1,4 @@
-package net.tinhvv.listeners.Click;
+package net.tinhvv.listeners.click;
 
 import net.tinhvv.equip.EquipmentGUI;
 import net.tinhvv.equip.EquipmentSlot;

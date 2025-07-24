@@ -1,4 +1,4 @@
-package net.tinhvv.items.Misc;
+package net.tinhvv.items.misc;
 
 import net.tinhvv.items.AbstractCustomItem;
 import net.tinhvv.mmorpg.Mmorpg;
