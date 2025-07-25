@@ -30,7 +30,7 @@ public class CustomItemClickRouter implements EventRouter<InventoryClickEvent> {
         CustomItemRegistry.match(current).ifPresent(item -> {
             switch (item.getId()) {
                 case "goblin_egg" -> handleGoblinEgg(player, event);
-                case "menu" -> handleMenuItem(player, event);
+                case "stats" -> handleStats(player, event);
             }
         });
     }
@@ -46,13 +46,9 @@ public class CustomItemClickRouter implements EventRouter<InventoryClickEvent> {
 
     }
 
-    private void handleMenuItem(Player player, InventoryClickEvent event) {
+    private void handleStats(Player player, InventoryClickEvent event) {
         event.setCancelled(true);
         ItemStack item = event.getCurrentItem();
-        CustomItemRegistry.match(item).ifPresent(customItem -> {
-            if (customItem instanceof AbstractCustomItem i) {
-                i.onClick(player, event);
-            }
-        });
+        player.performCommand("stats");
     }
 }

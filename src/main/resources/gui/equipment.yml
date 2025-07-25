@@ -1,0 +1,66 @@
+title: 'Your Equipment and Stats'
+size: 6
+
+fill:
+  enabled: true
+  material: black_stained_glass_pane
+
+items:
+  close:
+    pos: 4,4
+    material: barrier
+    display_name: 'Close GUI'
+  # ========== Equipment ==========
+  amulet:
+    pos: 1,1
+    material: lead
+    display_name: 'Missing amulet'
+
+  ring:
+    pos: 2,1
+    material: bell
+    display_name: 'Missing ring'
+
+  glove:
+    pos: 3,1
+    material: rabbit_foot
+    display_name: 'Missing glove'
+
+  belt:
+    pos: 4,1
+    material: string
+    display_name: 'Missing belt'
+
+  helmet:
+    pos: 1,2
+    material: iron_helmet
+    display_name: 'No Helmet'
+
+  chestplate:
+    pos: 2,2
+    material: diamond_chestplate
+    display_name: 'No Chestplate'
+
+  leggings:
+    pos: 3,2
+    material: iron_leggings
+    display_name: 'No Leggings'
+
+  boots:
+    pos: 4,2
+    material: golden_boots
+    display_name: 'No Boots'
+
+  # ========== Stats ==========
+
+  skull:
+    pos: 1,5
+    material: player_head
+    display_name: '{player}'
+    lore:
+      - '{entries[\n]}'
+
+  passive_bonus:
+    pos: 2,7
+    material: clock
+    display_name: '<gold>Passive Bonus'
