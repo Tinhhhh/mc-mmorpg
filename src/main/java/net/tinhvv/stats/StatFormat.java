@@ -8,7 +8,7 @@ public class StatFormat {
             case STRENGTH -> { color = "§4"; icon = "✕"; }
             case HEALTH -> { color = "§c"; icon = "❤"; }
             case REGENERATION -> { color = "§c"; icon = "\uD83D\uDC9E"; }
-            case LUCK -> { color = "§2"; icon = "\uD83C\uDF40"; }
+            case LUCK -> { color = "§5"; icon = "\uD83C\uDF40"; }
             case WISDOM -> { color = "§b"; icon = "✦"; }
             case TOUGHNESS -> { color = "§2"; icon = "❖"; }
             case CRIT_CHANCE -> { color = "§9"; icon = "\uD83D\uDCAB"; }

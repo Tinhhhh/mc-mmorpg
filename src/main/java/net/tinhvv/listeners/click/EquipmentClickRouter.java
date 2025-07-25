@@ -2,6 +2,7 @@ package net.tinhvv.listeners.click;
 
 import net.tinhvv.equip.EquipmentGUI;
 import net.tinhvv.equip.EquipmentSlot;
+import net.tinhvv.gui.StatsProvider;
 import net.tinhvv.listeners.EventRouter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,8 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
-
-import static net.tinhvv.equip.EquipmentGUI.createSlot;
 
 public class EquipmentClickRouter implements EventRouter<InventoryClickEvent> {
     private static final String TITLE = ChatColor.BLACK + "Your Equipment and Stats";
@@ -32,6 +31,7 @@ public class EquipmentClickRouter implements EventRouter<InventoryClickEvent> {
         if (!event.getView().getTitle().equals(EquipmentGUI.GUI_TITLE)) return;
 
         ItemStack current = event.getCurrentItem();
+        if (current == null || current.getType().isAir()) return;
         ItemStack cursor = event.getCursor();
 
         // Chỉ xử lý nếu là click trái hoặc phải
@@ -66,7 +66,8 @@ public class EquipmentClickRouter implements EventRouter<InventoryClickEvent> {
 
         switch (slot) {
             case 11 -> handleArmorUnequip(player, event.getInventory(), slot, EquipmentSlot.HELMET, "No Helmet");
-            case 20 -> handleArmorUnequip(player, event.getInventory(), slot, EquipmentSlot.CHESTPLATE, "No Chestplate");
+            case 20 ->
+                    handleArmorUnequip(player, event.getInventory(), slot, EquipmentSlot.CHESTPLATE, "No Chestplate");
             case 29 -> handleArmorUnequip(player, event.getInventory(), slot, EquipmentSlot.LEGGINGS, "No Leggings");
             case 38 -> handleArmorUnequip(player, event.getInventory(), slot, EquipmentSlot.BOOTS, "No Boots");
         }
@@ -138,7 +139,8 @@ public class EquipmentClickRouter implements EventRouter<InventoryClickEvent> {
             }
 
             // Cập nhật GUI
-            EquipmentGUI.setMultipleSlots(gui, createSlot(Material.WHITE_STAINED_GLASS_PANE, ChatColor.GRAY + emptyName), guiSlot);
+//            EquipmentGUI.setMultipleSlots(gui, createSlot(Material.WHITE_STAINED_GLASS_PANE, ChatColor.GRAY + emptyName), guiSlot);
+            StatsProvider.open(player);
         }
     }
 }
