@@ -1,7 +1,7 @@
 package net.tinhvv.listeners;
 
 import net.tinhvv.listeners.click.CustomItemClickRouter;
-import net.tinhvv.listeners.click.EquipmentClickRouter;
+import net.tinhvv.listeners.click.StatsUIClickRouter;
 import net.tinhvv.listeners.drop.CustomItemDrop;
 import net.tinhvv.listeners.interact.CustomItemInteract;
 import net.tinhvv.listeners.swap.CustomItemSwap;
@@ -18,7 +18,7 @@ public class InventoryListener implements Listener {
 
     private final List<EventRouter<InventoryClickEvent>> clickRouters = List.of(
             new CustomItemClickRouter(),
-            new EquipmentClickRouter()
+            new StatsUIClickRouter()
             // add more
     );
 

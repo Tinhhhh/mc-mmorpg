@@ -3,7 +3,7 @@ package net.tinhvv.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
-import net.tinhvv.equip.EquipmentProvider;
+import net.tinhvv.inventoryProvider.gui.EquipmentProvider;
 import org.bukkit.entity.Player;
 
 @CommandAlias("equippment|eq")

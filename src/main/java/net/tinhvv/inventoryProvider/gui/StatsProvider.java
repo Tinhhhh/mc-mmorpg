@@ -1,4 +1,4 @@
-package net.tinhvv.gui;
+package net.tinhvv.inventoryProvider.gui;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;

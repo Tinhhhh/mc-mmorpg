@@ -1,17 +1,22 @@
-package net.tinhvv.equip;
+package net.tinhvv.inventoryProvider.gui;
 
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.SlotPos;
+import net.tinhvv.equip.EquipmentManager;
+import net.tinhvv.equip.EquipmentType;
+import net.tinhvv.equip.PlayerEquipment;
 import net.tinhvv.items.misc.EmptySlotItem;
+import net.tinhvv.items.misc.MissingItem;
 import net.tinhvv.mmorpg.Mmorpg;
 import net.tinhvv.stats.StatFormat;
 import net.tinhvv.stats.StatType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -19,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -37,6 +43,13 @@ public class EquipmentProvider implements InventoryProvider {
         File file = new File(JavaPlugin.getPlugin(Mmorpg.class).getDataFolder(), "gui/" + fileName);
         this.config = YamlConfiguration.loadConfiguration(file);
     }
+
+    private static final Map<EquipmentType, Integer> slotMapping = Map.of(
+            EquipmentType.AMULET, 0,
+            EquipmentType.RING, 1,
+            EquipmentType.GLOVES, 2,
+            EquipmentType.BELT, 3
+    );
 
     @Override
     public void init(Player player, InventoryContents contents) {
@@ -77,9 +90,58 @@ public class EquipmentProvider implements InventoryProvider {
             if (stack == null || stack.getType().isAir()) {
                 stack = createNormalItem(player, item, material); // fallback nếu không có item
             }
-            contents.set(SlotPos.of(row, col), ClickableItem.empty(stack));
+
+            EquipmentType type = switch (key.toLowerCase()) {
+                case "amulet" -> EquipmentType.AMULET;
+                case "ring" -> EquipmentType.RING;
+                case "gloves" -> EquipmentType.GLOVES;
+                case "belt" -> EquipmentType.BELT;
+                default -> null;
+            };
+
+            if (type == null) continue;
+
+            final EquipmentType finalType = type;
+
+            contents.set(SlotPos.of(row, col), ClickableItem.of(stack, event -> {
+                ItemStack cursor = event.getCursor();
+                Player p = (Player) event.getWhoClicked();
+
+                // Nếu tay đang cầm item
+                if (cursor != null && cursor.getType() != Material.AIR) {
+                    // Check tag: ví dụ tag name = amulet
+                    if (!isValidEquipmentItem(cursor, finalType)) {
+                        p.sendMessage(ChatColor.RED + "Bạn không thể trang bị item này vào ô " + finalType.name().toLowerCase());
+                        return;
+                    }
+
+                    // Lưu vào equipment manager
+                    EquipmentManager.get(p).setItem(finalType, cursor.clone());
+                    event.setCursor(null); // Bỏ item khỏi chuột
+                    open(p); // reload GUI
+                }
+                // Nếu tay không cầm gì => gỡ item khỏi equipment
+                else {
+                    EquipmentManager.get(p).setItem(finalType, null);
+                    open(p);
+                }
+            }));
         }
     }
+
+    private boolean isValidEquipmentItem(ItemStack item, EquipmentType type) {
+        if (item == null || item.getType() == Material.AIR) return false;
+        if (!item.hasItemMeta()) return false;
+
+        ItemMeta meta = item.getItemMeta();
+        NamespacedKey key = new NamespacedKey(JavaPlugin.getPlugin(Mmorpg.class), "name");
+        if (meta.getPersistentDataContainer().has(key)) {
+            String value = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+            return value.equalsIgnoreCase(type.name().toLowerCase());
+        }
+        return false;
+    }
+
 
     private ItemStack GetEquipment(EquipmentType equipmentType, Player player) {
         PlayerEquipment equipment = EquipmentManager.get(player);

@@ -2,7 +2,7 @@ package net.tinhvv.listeners.click;
 
 import net.tinhvv.equip.EquipmentGUI;
 import net.tinhvv.equip.EquipmentSlot;
-import net.tinhvv.gui.StatsProvider;
+import net.tinhvv.inventoryProvider.gui.StatsProvider;
 import net.tinhvv.listeners.EventRouter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,7 +15,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
 
-public class EquipmentClickRouter implements EventRouter<InventoryClickEvent> {
+public class StatsUIClickRouter implements EventRouter<InventoryClickEvent> {
     private static final String TITLE = ChatColor.BLACK + "Your Equipment and Stats";
 
     @Override

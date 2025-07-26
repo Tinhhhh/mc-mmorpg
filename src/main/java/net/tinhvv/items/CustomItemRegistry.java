@@ -1,11 +1,16 @@
 package net.tinhvv.items;
 
+import net.tinhvv.items.accessory.amulet.seashell;
 import net.tinhvv.items.easterEgg.GoblinEgg;
 import net.tinhvv.items.misc.EmptySlotItem;
 import net.tinhvv.items.misc.MenuItem;
+import net.tinhvv.items.misc.MissingItem;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class CustomItemRegistry {
 
@@ -32,6 +37,8 @@ public class CustomItemRegistry {
         register(new GoblinEgg());
         register(new MenuItem());
         register(new EmptySlotItem());
+        register(new MissingItem());
+        register(new seashell());
         // Thêm các item khác ở đây
     }
 }

@@ -2,10 +2,7 @@ package net.tinhvv.mmorpg;
 
 import co.aikar.commands.BukkitCommandManager;
 import fr.minuskube.inv.InventoryManager;
-import net.tinhvv.commands.EasterEggCommand;
-import net.tinhvv.commands.EquipmentCommand;
-import net.tinhvv.commands.MenuCommand;
-import net.tinhvv.commands.StatsCommand;
+import net.tinhvv.commands.*;
 import net.tinhvv.equip.EquipmentManager;
 import net.tinhvv.items.CustomItemRegistry;
 import net.tinhvv.listeners.InventoryListener;
@@ -66,6 +63,7 @@ public final class Mmorpg extends JavaPlugin {
         manager.registerCommand(new MenuCommand());
         manager.registerCommand(new StatsCommand());
         manager.registerCommand(new EquipmentCommand());
+        manager.registerCommand(new TestItemCommand());
 
         // Registering listeners
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
