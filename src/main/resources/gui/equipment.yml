@@ -16,10 +16,10 @@ items:
     material: yellow_stained_glass_pane
     display_name: 'Missing ring'
 
-  glove:
+  gloves:
     pos: 0,2
     material: purple_stained_glass_pane
-    display_name: 'Missing glove'
+    display_name: 'Missing gloves'
 
   belt:
     pos: 0,3

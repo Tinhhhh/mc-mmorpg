@@ -1,7 +1,7 @@
 package net.tinhvv.listeners.click;
 
 import net.tinhvv.items.AbstractCustomItem;
-import net.tinhvv.items.CustomItemRegistry;
+import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.listeners.EventRouter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class CustomItemClickRouter implements EventRouter<InventoryClickEvent> {
         ItemStack item = event.getCurrentItem();
         if (item == null || item.getType() == Material.AIR) return false;
 
-        return CustomItemRegistry.match(item).isPresent();
+        return CustomItemManager.match(item).isPresent();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CustomItemClickRouter implements EventRouter<InventoryClickEvent> {
         Player player = (Player) event.getWhoClicked();
         ItemStack current = event.getCurrentItem();
 
-        CustomItemRegistry.match(current).ifPresent(item -> {
+        CustomItemManager.match(current).ifPresent(item -> {
             switch (item.getId()) {
                 case "goblin_egg" -> handleGoblinEgg(player, event);
                 case "stats" -> handleStats(player, event);
@@ -38,7 +38,7 @@ public class CustomItemClickRouter implements EventRouter<InventoryClickEvent> {
     private void handleGoblinEgg(Player player, InventoryClickEvent event) {
         event.setCancelled(true);
         ItemStack item = event.getCurrentItem();
-        CustomItemRegistry.match(item).ifPresent(customItem -> {
+        CustomItemManager.match(item).ifPresent(customItem -> {
             if (customItem instanceof AbstractCustomItem i) {
                 i.onClick(player, event);
             }

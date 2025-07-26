@@ -1,7 +1,7 @@
 package net.tinhvv.items.easterEgg;
 
 import net.tinhvv.items.AbstractCustomItem;
-import net.tinhvv.items.CustomItemRegistry;
+import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,7 +42,7 @@ public class GoblinEgg extends AbstractCustomItem {
         // Trì hoãn 1 tick rồi xóa item trên tay
         Bukkit.getScheduler().runTaskLater(Mmorpg.getInstance(), () -> {
             ItemStack handItem = player.getInventory().getItemInMainHand();
-            if (CustomItemRegistry.match(handItem).isPresent()) {
+            if (CustomItemManager.match(handItem).isPresent()) {
                 player.getInventory().setItemInMainHand(null);
             }
         }, 1L);

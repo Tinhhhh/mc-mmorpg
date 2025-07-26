@@ -1,7 +1,7 @@
 package net.tinhvv.listeners.interact;
 
 import net.tinhvv.items.AbstractCustomItem;
-import net.tinhvv.items.CustomItemRegistry;
+import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.listeners.EventRouter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
         ItemStack item = event.getItem();
         if (item == null || item.getType() == Material.AIR) return false;
 
-        return CustomItemRegistry.match(item).isPresent();
+        return CustomItemManager.match(item).isPresent();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
         Player player = event.getPlayer();
         ItemStack current = event.getItem();
 
-        CustomItemRegistry.match(current).ifPresent(item -> {
+        CustomItemManager.match(current).ifPresent(item -> {
             switch (item.getId()) {
                 case "goblin_egg" -> handleGoblinEgg(player, event);
                 case "menu" -> handleMenuItem(player, event);
@@ -39,7 +39,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
     private void handleGoblinEgg(Player player, PlayerInteractEvent event) {
 
         ItemStack item = event.getItem();
-        CustomItemRegistry.match(item).ifPresent(customItem -> {
+        CustomItemManager.match(item).ifPresent(customItem -> {
             if (customItem instanceof AbstractCustomItem i) {
                 Action action = event.getAction();
                 if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
@@ -54,7 +54,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
 
 
         ItemStack item = event.getItem();
-        CustomItemRegistry.match(item).ifPresent(customItem -> {
+        CustomItemManager.match(item).ifPresent(customItem -> {
             if (customItem instanceof AbstractCustomItem i) {
                 Action action = event.getAction();
                 if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {

@@ -6,7 +6,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.SlotPos;
 import net.tinhvv.equip.EquipmentGUI;
-import net.tinhvv.equip.EquipmentManager;
+import net.tinhvv.manager.EquipmentManager;
 import net.tinhvv.equip.EquipmentType;
 import net.tinhvv.equip.PlayerEquipment;
 import net.tinhvv.items.misc.EmptySlotItem;
@@ -52,7 +52,7 @@ public class StatsProvider implements InventoryProvider {
         if (items == null) return;
 
         PlayerInventory inv = player.getInventory();
-        PlayerEquipment equipment = EquipmentManager.get(player);
+        PlayerEquipment equipment = Mmorpg.getEquipmentManager().get(player);
 
         for (String key : items.getKeys(false)) {
             ConfigurationSection item = items.getConfigurationSection(key);
@@ -82,64 +82,6 @@ public class StatsProvider implements InventoryProvider {
 
             // Click để tháo / lắp đồ
             contents.set(SlotPos.of(row, col), ClickableItem.empty(stack));
-//            contents.set(SlotPos.of(row, col), ClickableItem.of(displayItem, e -> {
-//                ItemStack cursor = player.getItemOnCursor();
-//                boolean isCursorEmpty = (cursor == null || cursor.getType().isAir());
-//
-//                switch (key.toLowerCase()) {
-//                    case "helmet" -> {
-//                        if (isCursorEmpty) {
-//                            player.setItemOnCursor(inv.getHelmet());
-//                            inv.setHelmet(null);
-//                        } else {
-//                            inv.setHelmet(cursor.clone());
-//                            player.setItemOnCursor(null);
-//                        }
-//                    }
-//                    case "chestplate" -> {
-//                        if (isCursorEmpty) {
-//                            player.setItemOnCursor(inv.getChestplate());
-//                            inv.setChestplate(null);
-//                        } else {
-//                            inv.setChestplate(cursor.clone());
-//                            player.setItemOnCursor(null);
-//                        }
-//                    }
-//                    case "leggings" -> {
-//                        if (isCursorEmpty) {
-//                            player.setItemOnCursor(inv.getLeggings());
-//                            inv.setLeggings(null);
-//                        } else {
-//                            inv.setLeggings(cursor.clone());
-//                            player.setItemOnCursor(null);
-//                        }
-//                    }
-//                    case "boots" -> {
-//                        if (isCursorEmpty) {
-//                            player.setItemOnCursor(inv.getBoots());
-//                            inv.setBoots(null);
-//                        } else {
-//                            inv.setBoots(cursor.clone());
-//                            player.setItemOnCursor(null);
-//                        }
-//                    }
-//                    case "amulet", "ring", "gloves", "belt" -> {
-//                        EquipmentType type = parseEquipmentType(key);
-//                        if (isCursorEmpty) {
-//                            player.setItemOnCursor(equipment.getItem(type));
-//                            equipment.setItem(type, null);
-//                        } else {
-//                            equipment.setItem(type, cursor.clone());
-//                            player.setItemOnCursor(null);
-//                        }
-//                    }
-//                    default -> {
-//                        // không thao tác
-//                    }
-//                }
-//
-//                // reload GUI
-//            }));
         }
     }
 
@@ -182,7 +124,7 @@ public class StatsProvider implements InventoryProvider {
         List<String> lore = new ArrayList<>();
         for (StatType stat : StatType.values()) {
             double value = Mmorpg.getStatManager().getTotalStat(player, stat);
-            lore.add(StatFormat.format(stat, value));
+            lore.add(StatFormat.format(player, stat, value));
         }
 
 
@@ -197,14 +139,14 @@ public class StatsProvider implements InventoryProvider {
 
         String rawName = item.getString("display_name", "");
         String displayName = ChatColor.translateAlternateColorCodes('<',
-                processStatPlaceholder(rawName.replace("{player}", player.getName()), player));
+                StatFormat.processStatPlaceholder(rawName.replace("{player}", player.getName()), player));
         meta.setDisplayName(displayName);
 
         if (item.contains("lore")) {
             List<String> rawLore = item.getStringList("lore");
             List<String> lore = rawLore.stream()
                     .map(line -> ChatColor.translateAlternateColorCodes('<',
-                            processStatPlaceholder(line.replace("{player}", player.getName()), player)))
+                            StatFormat.processStatPlaceholder(line.replace("{player}", player.getName()), player)))
                     .collect(Collectors.toList());
             meta.setLore(lore);
         }
@@ -222,7 +164,7 @@ public class StatsProvider implements InventoryProvider {
             try {
                 StatType type = StatType.valueOf(key);
                 double value = Mmorpg.getStatManager().getTotalStat(player, type);
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(StatFormat.format(type, value)));
+                matcher.appendReplacement(sb, Matcher.quoteReplacement(StatFormat.format(player, type, value)));
             } catch (IllegalArgumentException e) {
                 matcher.appendReplacement(sb, Matcher.quoteReplacement("{invalid:" + key + "}"));
             }

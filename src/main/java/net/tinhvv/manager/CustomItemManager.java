@@ -1,29 +1,41 @@
-package net.tinhvv.items;
+package net.tinhvv.manager;
 
+import net.tinhvv.items.AbstractCustomItem;
+import net.tinhvv.items.CustomItem;
 import net.tinhvv.items.accessory.amulet.seashell;
 import net.tinhvv.items.easterEgg.GoblinEgg;
 import net.tinhvv.items.misc.EmptySlotItem;
 import net.tinhvv.items.misc.MenuItem;
 import net.tinhvv.items.misc.MissingItem;
+import net.tinhvv.stats.StatModifier;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-public class CustomItemRegistry {
+public class CustomItemManager {
 
     private static final Map<String, CustomItem> items = new HashMap<>();
 
+    /**
+     * Đăng ký một CustomItem mới vào hệ thống
+     * @param item CustomItem cần đăng ký
+     */
     public static void register(CustomItem item) {
         items.put(item.getId(), item); // đảm bảo mỗi ID là unique
     }
 
+    /*
+    Lấy ra CustomItem tương ứng từ ItemStack
+     */
     public static Optional<CustomItem> match(ItemStack item) {
         return items.values().stream().filter(ci -> ci.isMatch(item)).findFirst();
     }
 
+    /**
+     * Lấy CustomItem theo ID
+     * @param id ID của CustomItem cần lấy
+     * @return CustomItem nếu tìm thấy, null nếu không tìm thấy
+     */
     public static CustomItem getById(String id) {
         return items.get(id);
     }
@@ -31,6 +43,15 @@ public class CustomItemRegistry {
     public static Collection<CustomItem> getAll() {
         return items.values();
     }
+
+    public static List<StatModifier> getModifiers(ItemStack item) {
+        Optional<CustomItem> match = match(item);
+        if (match.isPresent() && match.get() instanceof AbstractCustomItem customItem) {
+            return customItem.getStatModifiers();
+        }
+        return List.of(); // không có modifier
+    }
+
 
     // Gọi hàm này trong onEnable()
     public static void init() {

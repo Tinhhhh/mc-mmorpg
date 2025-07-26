@@ -38,17 +38,21 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>co.aikar.commands</pattern>
+                                    <shadedPattern>net.tinhvv.lib.acf</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>fr.minuskube.inv</pattern>
+                                    <shadedPattern>net.tinhvv.lib.smartinv</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <outputFile>C:/Users/TINH KHUNG/Documents/game-project/Minecraft-server/Spigot Server/plugins/mmorpg.jar</outputFile>
+                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
-                <configuration>
-                    <outputDirectory>C:\Users\TINH KHUNG\Documents\game-project\Minecraft-server\Spigot Server\plugins
-                    </outputDirectory>
-                </configuration>
             </plugin>
         </plugins>
         <resources>
@@ -58,6 +62,7 @@
             </resource>
         </resources>
     </build>
+
 
     <repositories>
         <repository>

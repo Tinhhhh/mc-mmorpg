@@ -1,10 +1,12 @@
 package net.tinhvv.listeners;
 
 import net.tinhvv.listeners.click.CustomItemClickRouter;
+import net.tinhvv.listeners.click.EquipmentStatRouter;
 import net.tinhvv.listeners.click.StatsUIClickRouter;
 import net.tinhvv.listeners.drop.CustomItemDrop;
 import net.tinhvv.listeners.interact.CustomItemInteract;
 import net.tinhvv.listeners.swap.CustomItemSwap;
+import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -18,7 +20,8 @@ public class InventoryListener implements Listener {
 
     private final List<EventRouter<InventoryClickEvent>> clickRouters = List.of(
             new CustomItemClickRouter(),
-            new StatsUIClickRouter()
+            new StatsUIClickRouter(),
+            new EquipmentStatRouter(Mmorpg.getStatManager())
             // add more
     );
 
@@ -77,5 +80,7 @@ public class InventoryListener implements Listener {
             }
         }
     }
+
+
 
 }

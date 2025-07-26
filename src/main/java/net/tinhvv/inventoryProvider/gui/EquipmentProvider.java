@@ -5,14 +5,12 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.SlotPos;
-import net.tinhvv.equip.EquipmentManager;
+import net.tinhvv.manager.EquipmentManager;
 import net.tinhvv.equip.EquipmentType;
 import net.tinhvv.equip.PlayerEquipment;
 import net.tinhvv.items.misc.EmptySlotItem;
-import net.tinhvv.items.misc.MissingItem;
 import net.tinhvv.mmorpg.Mmorpg;
 import net.tinhvv.stats.StatFormat;
-import net.tinhvv.stats.StatType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,14 +27,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class EquipmentProvider implements InventoryProvider {
 
+    private final static Logger LOGGER = Bukkit.getLogger();
     private final FileConfiguration config;
 
     public EquipmentProvider(String fileName) {
@@ -110,20 +109,47 @@ public class EquipmentProvider implements InventoryProvider {
                 // Nếu tay đang cầm item
                 if (cursor != null && cursor.getType() != Material.AIR) {
                     // Check tag: ví dụ tag name = amulet
+                    //finalType: Truyền vào items key của slot (amulet, ring, gloves, belt)
                     if (!isValidEquipmentItem(cursor, finalType)) {
                         p.sendMessage(ChatColor.RED + "Bạn không thể trang bị item này vào ô " + finalType.name().toLowerCase());
                         return;
                     }
 
                     // Lưu vào equipment manager
-                    EquipmentManager.get(p).setItem(finalType, cursor.clone());
-                    event.setCursor(null); // Bỏ item khỏi chuột
-                    open(p); // reload GUI
+                    Mmorpg.getEquipmentManager().get(p).setItem(finalType, cursor.clone());
+                    Mmorpg.getEquipmentManager().save(p);
+                    event.setCursor(null);
+
+                    // 🟩 Reload GUI để hiển thị thay đổi
+                    EquipmentProvider.open(p);
                 }
                 // Nếu tay không cầm gì => gỡ item khỏi equipment
                 else {
-                    EquipmentManager.get(p).setItem(finalType, null);
-                    open(p);
+
+                    // Gỡ item cũ
+                    PlayerEquipment equipment = Mmorpg.getEquipmentManager().get(p);
+                    ItemStack old = equipment.getItem(finalType);
+
+                    if (old != null && old.getType() != Material.AIR) {
+                        // Ưu tiên đưa vào tay nếu tay đang trống
+                        if (p.getInventory().getItemInMainHand().getType() == Material.AIR) {
+                            p.getInventory().setItemInMainHand(old.clone());
+                        } else {
+                            // Nếu tay bận → cho vào inventory
+                            HashMap<Integer, ItemStack> overflow = p.getInventory().addItem(old.clone());
+                            if (!overflow.isEmpty()) {
+                                // Nếu full inventory → drop ra đất
+                                for (ItemStack leftover : overflow.values()) {
+                                    p.getWorld().dropItemNaturally(p.getLocation(), leftover);
+                                }
+                            }
+                        }
+                    }
+
+                    Mmorpg.getEquipmentManager().get(p).setItem(finalType, null);
+                    // 🔁 Lưu sau khi gỡ trang bị
+                    Mmorpg.getEquipmentManager().save(p);
+                    EquipmentProvider.open(p);
                 }
             }));
         }
@@ -134,17 +160,20 @@ public class EquipmentProvider implements InventoryProvider {
         if (!item.hasItemMeta()) return false;
 
         ItemMeta meta = item.getItemMeta();
-        NamespacedKey key = new NamespacedKey(JavaPlugin.getPlugin(Mmorpg.class), "name");
-        if (meta.getPersistentDataContainer().has(key)) {
-            String value = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            return value.equalsIgnoreCase(type.name().toLowerCase());
+        NamespacedKey key = new NamespacedKey(Mmorpg.getInstance(), type.name());
+        if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+            LOGGER.info("Item display name: " + item.getItemMeta().getDisplayName() + ", key: " + key);
+            String itemTag = key.toString().split(":")[1];
+            LOGGER.info("Item tag found: " + itemTag);
+            LOGGER.info("Slot tag found: " + type.name());
+            return itemTag.equalsIgnoreCase(type.name().toLowerCase());
         }
         return false;
     }
 
 
     private ItemStack GetEquipment(EquipmentType equipmentType, Player player) {
-        PlayerEquipment equipment = EquipmentManager.get(player);
+        PlayerEquipment equipment = Mmorpg.getEquipmentManager().get(player);
         if (equipment == null) return null;
 
         ItemStack item = equipment.getItem(equipmentType);
@@ -183,14 +212,14 @@ public class EquipmentProvider implements InventoryProvider {
 
         String rawName = item.getString("display_name", "");
         String displayName = ChatColor.translateAlternateColorCodes('<',
-                processStatPlaceholder(rawName.replace("{player}", player.getName()), player));
+                StatFormat.processStatPlaceholder(rawName.replace("{player}", player.getName()), player));
         meta.setDisplayName(displayName);
 
         if (item.contains("lore")) {
             List<String> rawLore = item.getStringList("lore");
             List<String> lore = rawLore.stream()
                     .map(line -> ChatColor.translateAlternateColorCodes('<',
-                            processStatPlaceholder(line.replace("{player}", player.getName()), player)))
+                            StatFormat.processStatPlaceholder(line.replace("{player}", player.getName()), player)))
                     .collect(Collectors.toList());
             meta.setLore(lore);
         }
@@ -199,24 +228,24 @@ public class EquipmentProvider implements InventoryProvider {
         return stack;
     }
 
-    private String processStatPlaceholder(String input, Player player) {
-        Matcher matcher = Pattern.compile("\\{stat:([A-Z_]+)}").matcher(input);
-        StringBuffer sb = new StringBuffer();
-
-        while (matcher.find()) {
-            String key = matcher.group(1);
-            try {
-                StatType type = StatType.valueOf(key);
-                double value = Mmorpg.getStatManager().getTotalStat(player, type);
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(StatFormat.format(type, value)));
-            } catch (IllegalArgumentException e) {
-                matcher.appendReplacement(sb, Matcher.quoteReplacement("{invalid:" + key + "}"));
-            }
-        }
-
-        matcher.appendTail(sb);
-        return sb.toString();
-    }
+//    private String processStatPlaceholder(String input, Player player) {
+//        Matcher matcher = Pattern.compile("\\{stat:([A-Z_]+)}").matcher(input);
+//        StringBuffer sb = new StringBuffer();
+//
+//        while (matcher.find()) {
+//            String key = matcher.group(1);
+//            try {
+//                StatType type = StatType.valueOf(key);
+//                double value = Mmorpg.getStatManager().getTotalStat(player, type);
+//                matcher.appendReplacement(sb, Matcher.quoteReplacement(StatFormat.format(player, type, value)));
+//            } catch (IllegalArgumentException e) {
+//                matcher.appendReplacement(sb, Matcher.quoteReplacement("{invalid:" + key + "}"));
+//            }
+//        }
+//
+//        matcher.appendTail(sb);
+//        return sb.toString();
+//    }
 
     public static void open(Player player) {
         SmartInventory.builder()

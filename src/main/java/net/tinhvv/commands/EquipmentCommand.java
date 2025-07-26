@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.Default;
 import net.tinhvv.inventoryProvider.gui.EquipmentProvider;
+import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.entity.Player;
 
 @CommandAlias("equippment|eq")

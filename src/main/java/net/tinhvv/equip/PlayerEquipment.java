@@ -1,8 +1,11 @@
 package net.tinhvv.equip;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlayerEquipment {
@@ -18,5 +21,15 @@ public class PlayerEquipment {
 
     public Map<EquipmentType, ItemStack> getAllEquipment() {
         return equipment;
+    }
+
+    public List<ItemStack> getAllEquipped() {
+        List<ItemStack> equipped = new ArrayList<>();
+        for (ItemStack item : equipment.values()) {
+            if (item != null && item.getType() != Material.AIR) {
+                equipped.add(item);
+            }
+        }
+        return equipped;
     }
 }

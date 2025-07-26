@@ -1,6 +1,6 @@
 package net.tinhvv.listeners.drop;
 
-import net.tinhvv.items.CustomItemRegistry;
+import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.listeners.EventRouter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -10,7 +10,7 @@ public class CustomItemDrop implements EventRouter<PlayerDropItemEvent> {
 
     @Override
     public boolean accept(PlayerDropItemEvent event) {
-        return CustomItemRegistry.match(event.getItemDrop().getItemStack()).isPresent();
+        return CustomItemManager.match(event.getItemDrop().getItemStack()).isPresent();
     }
 
     @Override
@@ -18,7 +18,7 @@ public class CustomItemDrop implements EventRouter<PlayerDropItemEvent> {
         Player player = event.getPlayer();
         ItemStack current = event.getItemDrop().getItemStack();
 
-        CustomItemRegistry.match(current).ifPresent(item -> {
+        CustomItemManager.match(current).ifPresent(item -> {
             switch (item.getId()) {
                 case "menu" -> handleMenuItemClick(player, event);
             }

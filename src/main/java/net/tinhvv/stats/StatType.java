@@ -4,6 +4,7 @@ public enum StatType {
     STRENGTH,
     HEALTH,
     REGENERATION,
+    ARMOR,
     TOUGHNESS,
     WISDOM,
     LUCK,

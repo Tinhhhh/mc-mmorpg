@@ -4,6 +4,7 @@ import net.tinhvv.equip.EquipmentGUI;
 import net.tinhvv.equip.EquipmentSlot;
 import net.tinhvv.inventoryProvider.gui.StatsProvider;
 import net.tinhvv.listeners.EventRouter;
+import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -110,6 +111,11 @@ public class StatsUIClickRouter implements EventRouter<InventoryClickEvent> {
             case LEGGINGS -> inv.setLeggings(newItem.clone());
             case BOOTS -> inv.setBoots(newItem.clone());
         }
+
+
+        //  Cập nhật chỉ số sau khi mặc đồ
+        Mmorpg.getStatManager().updateFromAllEquipment(player);
+
     }
 
     private void safeAddToInventory(Player player, ItemStack item) {
@@ -140,6 +146,7 @@ public class StatsUIClickRouter implements EventRouter<InventoryClickEvent> {
 
             // Cập nhật GUI
 //            EquipmentGUI.setMultipleSlots(gui, createSlot(Material.WHITE_STAINED_GLASS_PANE, ChatColor.GRAY + emptyName), guiSlot);
+            Mmorpg.getStatManager().updateFromAllEquipment(player);
             StatsProvider.open(player);
         }
     }
