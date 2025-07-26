@@ -42,7 +42,7 @@ public class GoblinEgg extends AbstractCustomItem {
         // Trì hoãn 1 tick rồi xóa item trên tay
         Bukkit.getScheduler().runTaskLater(Mmorpg.getInstance(), () -> {
             ItemStack handItem = player.getInventory().getItemInMainHand();
-            if (CustomItemManager.match(handItem).isPresent()) {
+            if (Mmorpg.getCustomItemManager().match(handItem).isPresent()) {
                 player.getInventory().setItemInMainHand(null);
             }
         }, 1L);

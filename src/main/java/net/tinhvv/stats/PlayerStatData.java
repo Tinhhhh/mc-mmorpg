@@ -10,11 +10,12 @@ public class PlayerStatData {
         // Gán giá trị base cho các chỉ số chính
         setStat(StatType.STRENGTH, 0.0);
         setStat(StatType.HEALTH, 20.0);
-        setStat(StatType.REGENERATION, 0.0);
+        setStat(StatType.REGENERATION, 100.0);
+        setStat(StatType.ATTACK_SPEED, 0.0);
         setStat(StatType.ARMOR, 0.0);
         setStat(StatType.TOUGHNESS, 0.0);
-        setStat(StatType.WISDOM, 20.0);
-        setStat(StatType.SPEED, 1.0);
+        setStat(StatType.INTELLIGENT, 20.0);
+        setStat(StatType.SPEED, 0.1);
         setStat(StatType.LUCK, 0.0);
         setStat(StatType.CRIT_CHANCE, 20.0);
         setStat(StatType.CRIT_DAMAGE, 100.0);
@@ -37,4 +38,6 @@ public class PlayerStatData {
     public Map<StatType, Double> getAll() {
         return Collections.unmodifiableMap(stats);
     }
+
+
 }

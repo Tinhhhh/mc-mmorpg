@@ -9,8 +9,6 @@ import net.tinhvv.listeners.misc.MiscListener;
 import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.manager.EquipmentManager;
 import net.tinhvv.manager.StatManager;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Mmorpg extends JavaPlugin {
@@ -24,12 +22,22 @@ public final class Mmorpg extends JavaPlugin {
     public static Mmorpg getInstance() {
         return instance;
     }
-    public static StatManager getStatManager() {return statManager;}
+
+    public static StatManager getStatManager() {
+        return statManager;
+    }
+
     public static InventoryManager getInventoryManager() {
         return inventoryManager;
     }
-    public static EquipmentManager getEquipmentManager() {return equipmentManager;}
-    public static CustomItemManager getCustomItemManager() {return customItemManager;}
+
+    public static EquipmentManager getEquipmentManager() {
+        return equipmentManager;
+    }
+
+    public static CustomItemManager getCustomItemManager() {
+        return customItemManager;
+    }
 
     @Override
     public void onEnable() {
@@ -43,7 +51,7 @@ public final class Mmorpg extends JavaPlugin {
 
         // Init các hệ thống cần thiết
         inventoryManager.init();
-        CustomItemManager.init();
+        customItemManager.init();
 
         // Copy file GUI YAML từ JAR ra thư mục plugin (nếu chưa có)
         saveResource("gui/stats.yml", true);
@@ -69,7 +77,6 @@ public final class Mmorpg extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         getServer().getPluginManager().registerEvents(new MiscListener(), this);
     }
-
 
 
     @Override

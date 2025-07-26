@@ -72,7 +72,7 @@ public abstract class AbstractCustomItem implements CustomItem {
     private List<StatType> getOrderedStatTypes() {
         return List.of(
                 StatType.STRENGTH, StatType.HEALTH, StatType.REGENERATION,
-                StatType.ARMOR, StatType.TOUGHNESS, StatType.WISDOM,
+                StatType.ARMOR, StatType.TOUGHNESS, StatType.INTELLIGENT,
                 StatType.LUCK, StatType.SPEED, StatType.CRIT_CHANCE, StatType.CRIT_DAMAGE
         );
     }

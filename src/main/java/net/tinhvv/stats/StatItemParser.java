@@ -1,6 +1,7 @@
 package net.tinhvv.stats;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -37,5 +38,32 @@ public class StatItemParser {
 
         return list;
     }
+
+    private static boolean isWeapon(ItemStack item) {
+        Material type = item.getType();
+
+        // Danh sách các loại vũ khí vanilla
+        if (type.name().endsWith("_SWORD") ||
+                type.name().endsWith("_AXE") ||
+                type.name().endsWith("_BOW") ||
+                type.name().endsWith("_CROSSBOW") ||
+                type.name().endsWith("_TRIDENT") ||
+                type.name().endsWith("_HOE")) {
+            return true;
+        }
+
+        // Nếu là item custom, kiểm tra PersistentData hoặc key đặc biệt trong lore
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasLore()) {
+            for (String line : meta.getLore()) {
+                if (ChatColor.stripColor(line).toLowerCase().contains("weapon")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
 

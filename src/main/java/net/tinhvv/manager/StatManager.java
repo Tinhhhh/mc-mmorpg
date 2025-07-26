@@ -6,14 +6,18 @@ import net.tinhvv.items.AbstractCustomItem;
 import net.tinhvv.items.CustomItem;
 import net.tinhvv.mmorpg.Mmorpg;
 import net.tinhvv.stats.*;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public class StatManager {
+
+    private static final Logger LOGGER = Logger.getLogger(StatManager.class.getName());
 
     // Player stat data (base level of each stat)
     private final Map<UUID, PlayerStatData> data = new ConcurrentHashMap<>();
@@ -73,12 +77,37 @@ public class StatManager {
 
         // Modifiers từ item trang bị
         PlayerEquipment equip = Mmorpg.getEquipmentManager().get(player);
+
+        //Logger
+        if (equip == null) {
+            LOGGER.warning("[StatManager] Equipment not found for player " + player.getUniqueId());
+        }
+
+        Map<EquipmentType, ItemStack> equipMap = equip.getAllEquipment();
+
+        for (Map.Entry<EquipmentType, ItemStack> entry : equipMap.entrySet()) {
+            ItemStack item = entry.getValue();
+            String itemName;
+
+            if (item == null || item.getType() == Material.AIR) {
+                itemName = "NONE";
+            } else if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                itemName = item.getItemMeta().getDisplayName();
+            } else {
+                itemName = item.getType().toString();
+            }
+
+            LOGGER.info("[" + player.getName() + "] item: " + itemName);
+        }
+        //Logger
+
         for (ItemStack item : equip.getAllEquipped()) {
-            Optional<CustomItem> custom = CustomItemManager.match(item);
+            Optional<CustomItem> custom = Mmorpg.getCustomItemManager().match(item);
             if (custom.isPresent() && custom.get() instanceof AbstractCustomItem aci) {
                 for (StatModifier mod : aci.getStatModifiers()) {
                     if (mod.getStat() == stat) {
                         total += mod.getValue();
+                        LOGGER.info("[StatManager] Adding modifier from custom item: " + mod.getSource() + " for stat " + stat + " with value " + mod.getValue());
                     }
                 }
             }
@@ -89,6 +118,7 @@ public class StatManager {
         for (StatModifier mod : otherModifiers) {
             if (mod.getStat() == stat) {
                 total += mod.getValue();
+                LOGGER.info("[StatManager] Adding modifier: " + mod.getSource() + " for stat " + stat + " with value " + mod.getValue());
             }
         }
 
@@ -171,7 +201,7 @@ public class StatManager {
             if (item == null || item.getType().isAir()) continue;
 
             // Kiểm tra item có phải là custom item không
-            Optional<CustomItem> custom = CustomItemManager.match(item);
+            Optional<CustomItem> custom = Mmorpg.getCustomItemManager().match(item);
             if (custom.isPresent() && custom.get() instanceof AbstractCustomItem customItem) {
                 modifiers.addAll(customItem.getStatModifiers());
             }

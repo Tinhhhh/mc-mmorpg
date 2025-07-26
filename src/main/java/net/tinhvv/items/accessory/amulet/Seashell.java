@@ -11,10 +11,10 @@ import org.bukkit.Material;
 import java.util.List;
 import java.util.Map;
 
-public class seashell extends AbstractCustomItem {
+public class Seashell extends AbstractCustomItem {
 
-    public seashell() {
-        super("seashell", Material.CLAY_BALL, EquipmentType.AMULET.toString());
+    public Seashell() {
+        super("Seashell", Material.CLAY_BALL, EquipmentType.AMULET.toString());
     }
 
     @Override
@@ -25,7 +25,7 @@ public class seashell extends AbstractCustomItem {
     @Override
     protected List<String> getLore() {
         return StatFormat.lore(List.of(
-                ChatColor.GRAY + "A beautiful seashell,",
+                ChatColor.GRAY + "A beautiful Seashell,",
                 ChatColor.GRAY + "often found on beaches.",
                 ChatColor.GRAY + "Increases your luck when worn.",
                 "",

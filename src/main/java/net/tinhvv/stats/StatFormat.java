@@ -11,22 +11,30 @@ import java.util.stream.Collectors;
 public class StatFormat {
 
     public static List<String> lore(List<Object> lines) {
-        return lines.stream().map(line -> {
-            if (line instanceof StatModifier mod) {
-                StatType type = mod.getStat();
-                double value = mod.getValue();
-                String color = getColor(type);
-                String icon = getIcon(type);
-                String suffix = (type.name().contains("CRIT") || type == StatType.SPEED) ? "%" : "";
-                String formatted = (value == (long) value)
-                        ? String.format("%d", (long) value)
-                        : String.format("%.2f", value);
+        return lines.stream()
+                .filter(line -> !(line instanceof StatModifier mod) || mod.getStat() != StatType.BASE_DAMAGE)
+                .map(line -> {
+                    if (line instanceof StatModifier mod) {
+                        StatType type = mod.getStat();
+                        double value = mod.getValue();
+                        String color = getColor(type);
+                        String icon = getIcon(type);
+                        String suffix = (type.name().contains("CRIT")) ? "%" : "";
 
-                return color + icon + " " + capitalize(type.name()) + " +" + formatted + suffix;
-            } else {
-                return line.toString();
-            }
-        }).collect(Collectors.toList());
+
+                        if (type == StatType.SPEED) {
+                            value *= 100;
+                        }
+
+                        String formatted = (value == (long) value)
+                                ? String.format("%d", (long) value)
+                                : String.format("%.2f", value);
+
+                        return color + icon + " " + capitalize(type.name()) + " +" + formatted + suffix;
+                    } else {
+                        return line.toString();
+                    }
+                }).collect(Collectors.toList());
     }
 
     private static String getColor(StatType type) {
@@ -36,7 +44,7 @@ public class StatFormat {
             case ARMOR -> "§7";
             case TOUGHNESS -> "§2";
             case LUCK -> "§5";
-            case WISDOM -> "§b";
+            case INTELLIGENT -> "§b";
             case CRIT_CHANCE, CRIT_DAMAGE -> "§9";
             case SPEED -> "§f";
             default -> "§7";
@@ -51,7 +59,7 @@ public class StatFormat {
             case ARMOR -> "🛡";
             case TOUGHNESS -> "❖";
             case LUCK -> "🍀";
-            case WISDOM -> "✦";
+            case INTELLIGENT -> "✦";
             case CRIT_CHANCE -> "💫";
             case CRIT_DAMAGE -> "☠";
             case SPEED -> "👟";
@@ -79,7 +87,9 @@ public class StatFormat {
 
             double value = Mmorpg.getStatManager().getTotalStat(player, type);
             String replacement = format(player, type, value);
+            if (replacement.isEmpty()) replacement = ""; // hoặc "{hidden}" nếu mày debug
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+
         }
 
         matcher.appendTail(sb);
@@ -87,11 +97,18 @@ public class StatFormat {
     }
 
     public static String format(Player player, StatType type, double statValue) {
+        if (type == StatType.BASE_DAMAGE) return "";
+
         String color = getColor(type);
         String icon = getIcon(type);
         double value = statValue;
 
-        String suffix = (type.name().contains("CRIT") || type == StatType.SPEED) ? "%" : "";
+        String suffix = (type.name().contains("CRIT")) ? "%" : "";
+
+        if (type == StatType.SPEED) {
+            value *= 1000;
+        }
+
         String formatted = (value == (long) value) ? String.format("%d", (long) value) : String.format("%.2f", value);
 
         return color + icon + " " + capitalize(type.name()) + " " + formatted + suffix;

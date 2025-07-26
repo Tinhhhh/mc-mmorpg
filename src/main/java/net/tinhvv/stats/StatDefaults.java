@@ -18,7 +18,7 @@ public class StatDefaults {
         defaults.put(StatType.ARMOR, 0.0);
         defaults.put(StatType.TOUGHNESS, 0.0);
         defaults.put(StatType.LUCK, 0.0);
-        defaults.put(StatType.WISDOM, 0.0);
+        defaults.put(StatType.INTELLIGENT, 0.0);
         defaults.put(StatType.CRIT_CHANCE, 0.0);
         defaults.put(StatType.CRIT_DAMAGE, 0.0);
         defaults.put(StatType.SPEED, 10.0); // Mặc định là 10% (1.0 movement speed x 100)

@@ -3,6 +3,7 @@ package net.tinhvv.listeners.interact;
 import net.tinhvv.items.AbstractCustomItem;
 import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.listeners.EventRouter;
+import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -20,7 +21,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
         ItemStack item = event.getItem();
         if (item == null || item.getType() == Material.AIR) return false;
 
-        return CustomItemManager.match(item).isPresent();
+        return Mmorpg.getCustomItemManager().match(item).isPresent();
     }
 
     @Override
@@ -28,7 +29,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
         Player player = event.getPlayer();
         ItemStack current = event.getItem();
 
-        CustomItemManager.match(current).ifPresent(item -> {
+        Mmorpg.getCustomItemManager().match(current).ifPresent(item -> {
             switch (item.getId()) {
                 case "goblin_egg" -> handleGoblinEgg(player, event);
                 case "menu" -> handleMenuItem(player, event);
@@ -39,7 +40,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
     private void handleGoblinEgg(Player player, PlayerInteractEvent event) {
 
         ItemStack item = event.getItem();
-        CustomItemManager.match(item).ifPresent(customItem -> {
+        Mmorpg.getCustomItemManager().match(item).ifPresent(customItem -> {
             if (customItem instanceof AbstractCustomItem i) {
                 Action action = event.getAction();
                 if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
@@ -54,7 +55,7 @@ public class CustomItemInteract implements EventRouter<PlayerInteractEvent> {
 
 
         ItemStack item = event.getItem();
-        CustomItemManager.match(item).ifPresent(customItem -> {
+        Mmorpg.getCustomItemManager().match(item).ifPresent(customItem -> {
             if (customItem instanceof AbstractCustomItem i) {
                 Action action = event.getAction();
                 if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {

@@ -5,7 +5,6 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.SlotPos;
-import net.tinhvv.manager.EquipmentManager;
 import net.tinhvv.equip.EquipmentType;
 import net.tinhvv.equip.PlayerEquipment;
 import net.tinhvv.items.misc.EmptySlotItem;
@@ -118,6 +117,7 @@ public class EquipmentProvider implements InventoryProvider {
                     // Lưu vào equipment manager
                     Mmorpg.getEquipmentManager().get(p).setItem(finalType, cursor.clone());
                     Mmorpg.getEquipmentManager().save(p);
+                    Mmorpg.getStatManager().updateFromAllEquipment(p);
                     event.setCursor(null);
 
                     // 🟩 Reload GUI để hiển thị thay đổi
@@ -127,7 +127,7 @@ public class EquipmentProvider implements InventoryProvider {
                 else {
 
                     // Gỡ item cũ
-                    PlayerEquipment equipment = Mmorpg.getEquipmentManager().get(p);
+                    PlayerEquipment equipment = Mmorpg.getEquipmentManager().getOrCreate(player);
                     ItemStack old = equipment.getItem(finalType);
 
                     if (old != null && old.getType() != Material.AIR) {
@@ -149,6 +149,7 @@ public class EquipmentProvider implements InventoryProvider {
                     Mmorpg.getEquipmentManager().get(p).setItem(finalType, null);
                     // 🔁 Lưu sau khi gỡ trang bị
                     Mmorpg.getEquipmentManager().save(p);
+                    Mmorpg.getStatManager().updateFromAllEquipment(p);
                     EquipmentProvider.open(p);
                 }
             }));
@@ -173,7 +174,7 @@ public class EquipmentProvider implements InventoryProvider {
 
 
     private ItemStack GetEquipment(EquipmentType equipmentType, Player player) {
-        PlayerEquipment equipment = Mmorpg.getEquipmentManager().get(player);
+        PlayerEquipment equipment = Mmorpg.getEquipmentManager().getOrCreate(player);
         if (equipment == null) return null;
 
         ItemStack item = equipment.getItem(equipmentType);
@@ -227,25 +228,6 @@ public class EquipmentProvider implements InventoryProvider {
         stack.setItemMeta(meta);
         return stack;
     }
-
-//    private String processStatPlaceholder(String input, Player player) {
-//        Matcher matcher = Pattern.compile("\\{stat:([A-Z_]+)}").matcher(input);
-//        StringBuffer sb = new StringBuffer();
-//
-//        while (matcher.find()) {
-//            String key = matcher.group(1);
-//            try {
-//                StatType type = StatType.valueOf(key);
-//                double value = Mmorpg.getStatManager().getTotalStat(player, type);
-//                matcher.appendReplacement(sb, Matcher.quoteReplacement(StatFormat.format(player, type, value)));
-//            } catch (IllegalArgumentException e) {
-//                matcher.appendReplacement(sb, Matcher.quoteReplacement("{invalid:" + key + "}"));
-//            }
-//        }
-//
-//        matcher.appendTail(sb);
-//        return sb.toString();
-//    }
 
     public static void open(Player player) {
         SmartInventory.builder()

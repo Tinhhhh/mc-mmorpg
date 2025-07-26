@@ -1,14 +1,13 @@
 package net.tinhvv.stats;
 
-public enum StatType {
+public enum ItemStatType {
     BASE_DAMAGE,
     STRENGTH,
     HEALTH,
-    ATTACK_SPEED,
     REGENERATION,
     ARMOR,
     TOUGHNESS,
-    INTELLIGENT,
+    WISDOM,
     LUCK,
     SPEED,
     CRIT_CHANCE,

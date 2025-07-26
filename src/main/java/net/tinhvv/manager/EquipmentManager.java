@@ -24,12 +24,7 @@ public class EquipmentManager {
     private static final Map<UUID, PlayerEquipment> equipmentMap = new HashMap<>();
 
     public PlayerEquipment get(Player player) {
-        UUID uuid = player.getUniqueId();
-        PlayerEquipment equip = equipmentMap.computeIfAbsent(uuid, k -> {
-            Bukkit.getLogger().info("[EquipmentManager] Loading equipment for " + player.getName() + "...");
-            return Mmorpg.getEquipmentManager().load(player);
-        });
-        return equip;
+        return equipmentMap.get(player.getUniqueId());
     }
 
     public void save(Player player) {
@@ -86,4 +81,10 @@ public class EquipmentManager {
         equipmentMap.put(uuid, data);
         return data;
     }
+
+    public PlayerEquipment getOrCreate(Player player) {
+        return equipmentMap.computeIfAbsent(player.getUniqueId(), id -> new PlayerEquipment());
+    }
+
+
 }

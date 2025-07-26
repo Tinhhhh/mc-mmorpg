@@ -1,5 +1,7 @@
 package net.tinhvv.stats;
 
+import java.util.List;
+
 public class StatModifier {
 
     private final StatType stat;
@@ -15,4 +17,15 @@ public class StatModifier {
     public StatType getStat() { return stat; }
     public double getValue() { return value; }
     public String getSource() { return source; }
+
+    public static StatModifier getModifierByStatType(List<StatModifier> modifiers, StatType type) {
+        for (StatModifier mod : modifiers) {
+            if (mod.getStat() == type) {
+                return mod;
+            }
+        }
+        return null; // hoặc Optional.empty() nếu muốn xài Optional
+    }
+
+
 }

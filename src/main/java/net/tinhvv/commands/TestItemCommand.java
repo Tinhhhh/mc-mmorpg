@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import net.tinhvv.items.CustomItem;
 import net.tinhvv.manager.CustomItemManager;
+import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,7 +16,7 @@ public class TestItemCommand extends BaseCommand {
     @Syntax("<id> [số lượng]")
     @Description("Nhận item tùy chỉnh từ ID")
     public void onGiveItem(Player player, String id, @Optional @Default("1") int amount) {
-        CustomItem item = CustomItemManager.getById(id);
+        CustomItem item = Mmorpg.getCustomItemManager().getById(id);
         if (item == null) {
             player.sendMessage("§cKhông tìm thấy item có ID: §e" + id);
             return;
