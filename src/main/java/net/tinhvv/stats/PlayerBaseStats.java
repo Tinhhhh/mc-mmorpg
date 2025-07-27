@@ -1,12 +1,11 @@
 package net.tinhvv.stats;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
-public class PlayerStatData {
 
-    public PlayerStatData() {
+public class PlayerBaseStats {
+
+    public PlayerBaseStats() {
         // Gán giá trị base cho các chỉ số chính
         setStat(StatType.STRENGTH, 0.0);
         setStat(StatType.HEALTH, 20.0);
@@ -37,6 +36,17 @@ public class PlayerStatData {
 
     public Map<StatType, Double> getAll() {
         return Collections.unmodifiableMap(stats);
+    }
+
+    public List<StatModifier> getBase() {
+        PlayerBaseStats baseStats = new PlayerBaseStats();
+        List<StatModifier> modifiers = new ArrayList<>();
+
+        for (Map.Entry<StatType, Double> entry : baseStats.getAll().entrySet()) {
+            modifiers.add(new StatModifier(entry.getKey(), entry.getValue(), "base"));
+        }
+
+        return modifiers;
     }
 
 

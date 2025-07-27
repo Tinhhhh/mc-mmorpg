@@ -1,7 +1,6 @@
 package net.tinhvv.listeners.click;
 
 import net.tinhvv.items.AbstractCustomItem;
-import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.listeners.EventRouter;
 import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.Material;
@@ -19,7 +18,6 @@ public class CustomItemClickRouter implements EventRouter<InventoryClickEvent> {
     public boolean accept(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
         if (item == null || item.getType() == Material.AIR) return false;
-
         return Mmorpg.getCustomItemManager().match(item).isPresent();
     }
 

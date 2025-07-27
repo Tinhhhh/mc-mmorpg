@@ -1,7 +1,6 @@
 package net.tinhvv.items.easterEgg;
 
 import net.tinhvv.items.AbstractCustomItem;
-import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

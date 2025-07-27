@@ -21,7 +21,7 @@ public class InventoryListener implements Listener {
     private final List<EventRouter<InventoryClickEvent>> clickRouters = List.of(
             new CustomItemClickRouter(),
             new StatsUIClickRouter(),
-            new EquipmentStatRouter(Mmorpg.getStatManager())
+            new EquipmentStatRouter()
             // add more
     );
 

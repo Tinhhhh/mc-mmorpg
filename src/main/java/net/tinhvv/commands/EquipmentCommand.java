@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class EquipmentCommand extends BaseCommand {
     @Default
     public void onCommand(Player player) {
-        Mmorpg.getEquipmentManager().getOrCreate(player); // Load trước cho an toàn
+        Mmorpg.getEquipmentInvManager().getOrCreate(player); // Load trước cho an toàn
         EquipmentProvider.open(player);
     }
 

@@ -25,14 +25,14 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Mmorpg.getEquipmentManager().load(player);
-        Mmorpg.getStatManager().updateFromAllEquipment(event.getPlayer());
-        Mmorpg.getEquipmentManager().getOrCreate(player);
+        Mmorpg.getEquipmentInvManager().getOrCreate(player);
+        Mmorpg.getEquipmentInvManager().load(player);
+        Mmorpg.getStatManager().calculatePlayerStats(event.getPlayer());
 
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        Mmorpg.getEquipmentManager().save(event.getPlayer());
+        Mmorpg.getEquipmentInvManager().save(event.getPlayer());
     }
 }

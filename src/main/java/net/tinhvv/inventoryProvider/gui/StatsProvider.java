@@ -6,7 +6,6 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.SlotPos;
 import net.tinhvv.equip.EquipmentGUI;
-import net.tinhvv.manager.EquipmentManager;
 import net.tinhvv.equip.EquipmentType;
 import net.tinhvv.equip.PlayerEquipment;
 import net.tinhvv.items.misc.EmptySlotItem;
@@ -52,7 +51,7 @@ public class StatsProvider implements InventoryProvider {
         if (items == null) return;
 
         PlayerInventory inv = player.getInventory();
-        PlayerEquipment equipment = Mmorpg.getEquipmentManager().get(player);
+        PlayerEquipment equipment = Mmorpg.getEquipmentInvManager().get(player);
 
         for (String key : items.getKeys(false)) {
             ConfigurationSection item = items.getConfigurationSection(key);
@@ -123,7 +122,7 @@ public class StatsProvider implements InventoryProvider {
 
         List<String> lore = new ArrayList<>();
         for (StatType stat : StatType.values()) {
-            double value = Mmorpg.getStatManager().getTotalStat(player, stat);
+            double value = Mmorpg.getStatManager().getTotalFromOneStat(player, stat);
             lore.add(StatFormat.format(player, stat, value));
         }
 
@@ -163,7 +162,7 @@ public class StatsProvider implements InventoryProvider {
             String key = matcher.group(1);
             try {
                 StatType type = StatType.valueOf(key);
-                double value = Mmorpg.getStatManager().getTotalStat(player, type);
+                double value = Mmorpg.getStatManager().getTotalFromOneStat(player, type);
                 matcher.appendReplacement(sb, Matcher.quoteReplacement(StatFormat.format(player, type, value)));
             } catch (IllegalArgumentException e) {
                 matcher.appendReplacement(sb, Matcher.quoteReplacement("{invalid:" + key + "}"));

@@ -2,21 +2,27 @@ package net.tinhvv.manager;
 
 import net.tinhvv.items.AbstractCustomItem;
 import net.tinhvv.items.CustomItem;
-import net.tinhvv.items.accessory.amulet.Seashell;
 import net.tinhvv.items.easterEgg.GoblinEgg;
+import net.tinhvv.items.equipment.accessory.amulet.Seashell;
+import net.tinhvv.items.equipment.armor.boots.ConverseC70;
 import net.tinhvv.items.misc.EmptySlotItem;
 import net.tinhvv.items.misc.MenuItem;
 import net.tinhvv.items.misc.MissingItem;
 import net.tinhvv.items.weapon.BluntSword;
 import net.tinhvv.items.weapon.RemoveEntitySword;
+import net.tinhvv.mmorpg.Mmorpg;
+import net.tinhvv.stats.StatItemParser;
 import net.tinhvv.stats.StatModifier;
+import net.tinhvv.stats.VanillaItemStats;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class CustomItemManager {
 
     private static final Map<String, CustomItem> items = new HashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(CustomItemManager.class.getName());
 
     /**
      * Đăng ký một CustomItem mới vào hệ thống
@@ -48,12 +54,45 @@ public class CustomItemManager {
         return items.values();
     }
 
-    public List<StatModifier> getModifiers(ItemStack item) {
+    public String getTagName(ItemStack item) {
+        // Kiểm tra xem item có phải là CustomItem không
         Optional<CustomItem> match = match(item);
-        if (match.isPresent() && match.get() instanceof AbstractCustomItem customItem) {
-            return customItem.getStatModifiers();
+        if (match.isPresent()) {
+            return match.get().getTagName(); // Trả về ID của CustomItem
         }
-        return List.of(); // không có modifier
+        return "UNKNOWN"; // Không xác định được loại item
+    }
+
+    public String getId(ItemStack item) {
+        // Kiểm tra xem item có phải là CustomItem không
+        Optional<CustomItem> match = match(item);
+        if (match.isPresent()) {
+            return match.get().getId(); // Trả về ID của CustomItem
+        }
+        return "UNKNOWN"; // Không xác định được loại item
+    }
+
+    public List<StatModifier> getModifiersByItemStack(ItemStack item) {
+
+        //Mặc định không có modifier nào
+        List<StatModifier> modifiers = new ArrayList<>();
+
+        String itemSource = StatItemParser.getItemSource(item);
+        if (itemSource.startsWith("VANILLA:")) {
+            // Nếu không phải CustomItem thì kiểm tra xem có phải item vanilla không
+            modifiers = VanillaItemStats.getStats(item, itemSource);
+        }
+
+        // Nếu là CustomItem thì lấy các modifier từ item đó
+        if (itemSource.startsWith("CUSTOM:")) {
+            Optional<CustomItem> custom = Mmorpg.getCustomItemManager().match(item);
+            if (custom.isPresent() && custom.get() instanceof AbstractCustomItem aci) {
+                modifiers = aci.getStatModifiers();
+            }
+        }
+
+        LOGGER.info("modifiers: " + modifiers);
+        return modifiers;
     }
 
 
@@ -66,6 +105,7 @@ public class CustomItemManager {
         register(new Seashell());
         register(new RemoveEntitySword());
         register(new BluntSword());
+        register(new ConverseC70());
         // Thêm các item khác ở đây
     }
 }

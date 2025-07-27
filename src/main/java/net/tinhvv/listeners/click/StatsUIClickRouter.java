@@ -26,7 +26,7 @@ public class StatsUIClickRouter implements EventRouter<InventoryClickEvent> {
 
     @Override
     public void handle(InventoryClickEvent event) {
-        event.setCancelled(true); // Chặn toàn bộ tương tác mặc định
+//        event.setCancelled(true); // Chặn toàn bộ tương tác mặc định
 
         Player player = (Player) event.getWhoClicked();
         if (!event.getView().getTitle().equals(EquipmentGUI.GUI_TITLE)) return;
@@ -114,7 +114,7 @@ public class StatsUIClickRouter implements EventRouter<InventoryClickEvent> {
 
 
         //  Cập nhật chỉ số sau khi mặc đồ
-        Mmorpg.getStatManager().updateFromAllEquipment(player);
+        Mmorpg.getStatManager().calculatePlayerStats(player);
 
     }
 
@@ -146,7 +146,7 @@ public class StatsUIClickRouter implements EventRouter<InventoryClickEvent> {
 
             // Cập nhật GUI
 //            EquipmentGUI.setMultipleSlots(gui, createSlot(Material.WHITE_STAINED_GLASS_PANE, ChatColor.GRAY + emptyName), guiSlot);
-            Mmorpg.getStatManager().updateFromAllEquipment(player);
+            Mmorpg.getStatManager().calculatePlayerStats(player);
             StatsProvider.open(player);
         }
     }

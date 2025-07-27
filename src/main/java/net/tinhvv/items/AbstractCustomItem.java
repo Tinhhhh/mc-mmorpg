@@ -43,6 +43,10 @@ public abstract class AbstractCustomItem implements CustomItem {
         return id;
     }
 
+    public String getTagName() {
+        return key.getKey();
+    }
+
     public boolean isMatch(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return false;
         ItemMeta meta = item.getItemMeta();
@@ -91,7 +95,6 @@ public abstract class AbstractCustomItem implements CustomItem {
         }
         return list;
     }
-
 
 
 }

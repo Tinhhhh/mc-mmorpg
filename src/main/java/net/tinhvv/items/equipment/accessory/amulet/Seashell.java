@@ -1,4 +1,4 @@
-package net.tinhvv.items.accessory.amulet;
+package net.tinhvv.items.equipment.accessory.amulet;
 
 import net.tinhvv.equip.EquipmentType;
 import net.tinhvv.items.AbstractCustomItem;

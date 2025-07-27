@@ -25,7 +25,7 @@ public class BluntSword extends AbstractCustomItem {
     @Override
     protected List<String> getLore() {
         return StatFormat.lore(List.of(
-                ChatColor.LIGHT_PURPLE + "A Chinese sword, characterized by its curved blade and often used for martial arts practice",
+                ChatColor.LIGHT_PURPLE + "A Chinese sword with a blunt edge",
                 new StatModifier(StatType.BASE_DAMAGE, 5.5, getId()),
                 new StatModifier(StatType.STRENGTH, 2.0, getId()),
                 ChatColor.WHITE + "" + ChatColor.BOLD + "Sword"

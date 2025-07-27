@@ -1,48 +1,60 @@
 package net.tinhvv.stats;// package net.tinhvv.stats;
 
-import net.tinhvv.manager.StatManager;
+import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.List;
+import java.util.logging.Logger;
+
 public class StatApplier {
 
-    public static void apply(Player player, StatManager statManager) {
+    private static final Logger LOGGER = Logger.getLogger(StatApplier.class.getName());
 
-        AttributeInstance healthAttr = player.getAttribute(Attribute.MAX_HEALTH);
-        healthAttr.setBaseValue(statManager.getTotalStat(player, StatType.HEALTH));
+    public static void apply(Player player) {
+        List<StatModifier> modifiers = Mmorpg.getStatManager().getModifiers(player);
 
-        int amp = calculateRegenAmplifier(player.getAttribute(Attribute.MAX_HEALTH).getBaseValue(),
-                statManager.getTotalStat(player, StatType.REGENERATION));
+        for (StatModifier mod : modifiers) {
+            StatType type = mod.getStat();
+            double value = mod.getValue();
 
-        int durationTicks = Integer.MAX_VALUE; // gần như vĩnh viễn
-        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, durationTicks, amp, true, false));
+            LOGGER.info("[StatApplier] Applying " + type.name() + " with value " + value + " to player " + player.getName());
 
-        AttributeInstance armorAttr = player.getAttribute(Attribute.ARMOR);
-        if (armorAttr != null) {
-            armorAttr.setBaseValue(statManager.getTotalStat(player, StatType.TOUGHNESS));
+            switch (type) {
+                case HEALTH -> {
+                    AttributeInstance health = player.getAttribute(Attribute.MAX_HEALTH);
+                    if (health != null) health.setBaseValue(value);
+                }
+                case REGENERATION -> {
+                    AttributeInstance health = player.getAttribute(Attribute.MAX_HEALTH);
+                    double maxHealth = (health != null) ? health.getBaseValue() : 20.0;
+                    int amp = calculateRegenAmplifier(maxHealth, value);
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, amp, true, false));
+                }
+                case ARMOR -> {
+                    AttributeInstance armor = player.getAttribute(Attribute.ARMOR);
+                    if (armor != null) armor.setBaseValue(value);
+                }
+                case TOUGHNESS -> {
+                    AttributeInstance tough = player.getAttribute(Attribute.ARMOR_TOUGHNESS);
+                    if (tough != null) tough.setBaseValue(value);
+                }
+                case ATTACK_SPEED -> {
+                    AttributeInstance atkSpeed = player.getAttribute(Attribute.ATTACK_SPEED);
+                    if (atkSpeed != null) atkSpeed.setBaseValue(value);
+                }
+                case SPEED -> {
+                    AttributeInstance speed = player.getAttribute(Attribute.MOVEMENT_SPEED);
+                    if (speed != null) speed.setBaseValue(value);
+                }
+                // mấy chỉ số khác thì tự nhét thêm vô đây
+            }
         }
-
-        AttributeInstance toughnessAttr = player.getAttribute(Attribute.ARMOR_TOUGHNESS);
-        if (toughnessAttr != null) {
-            toughnessAttr.setBaseValue(statManager.getTotalStat(player, StatType.TOUGHNESS));
-        }
-
-        AttributeInstance attackSpeedAttr = player.getAttribute(Attribute.ATTACK_SPEED);
-        if (attackSpeedAttr != null) {
-            double bonus = statManager.getTotalStat(player, StatType.ATTACK_SPEED);
-            attackSpeedAttr.setBaseValue(statManager.getTotalStat(player, StatType.ATTACK_SPEED));
-        }
-
-        AttributeInstance speedAttr = player.getAttribute(Attribute.MOVEMENT_SPEED);
-        if (speedAttr != null) {
-            speedAttr.setBaseValue(statManager.getTotalStat(player, StatType.SPEED));
-        }
-
-        // Có thể thêm SPEED, CRIT, v.v. sau
     }
+
 
     private static int calculateRegenAmplifier(double maxHealth, double healthRegen) {
         double base = (1.5 + maxHealth / 100.0) * (healthRegen / 100.0);

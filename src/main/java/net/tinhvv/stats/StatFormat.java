@@ -19,7 +19,7 @@ public class StatFormat {
                         double value = mod.getValue();
                         String color = getColor(type);
                         String icon = getIcon(type);
-                        String suffix = (type.name().contains("CRIT")) ? "%" : "";
+                        String suffix = (type.name().contains("CRIT")) || (type.name().equalsIgnoreCase("ATTACK_SPEED")) ? "%" : "";
 
 
                         if (type == StatType.SPEED) {
@@ -42,6 +42,7 @@ public class StatFormat {
             case STRENGTH -> "§4";
             case HEALTH, REGENERATION -> "§c";
             case ARMOR -> "§7";
+            case ATTACK_SPEED -> "§e";
             case TOUGHNESS -> "§2";
             case LUCK -> "§5";
             case INTELLIGENT -> "§b";
@@ -53,9 +54,10 @@ public class StatFormat {
 
     private static String getIcon(StatType type) {
         return switch (type) {
-            case STRENGTH -> "✕";
+            case STRENGTH -> "❁";
             case HEALTH -> "❤";
             case REGENERATION -> "💞";
+            case ATTACK_SPEED -> "⚔";
             case ARMOR -> "🛡";
             case TOUGHNESS -> "❖";
             case LUCK -> "🍀";
@@ -85,7 +87,7 @@ public class StatFormat {
                 continue;
             }
 
-            double value = Mmorpg.getStatManager().getTotalStat(player, type);
+            double value = Mmorpg.getStatManager().getTotalFromOneStat(player, type);
             String replacement = format(player, type, value);
             if (replacement.isEmpty()) replacement = ""; // hoặc "{hidden}" nếu mày debug
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
@@ -103,7 +105,7 @@ public class StatFormat {
         String icon = getIcon(type);
         double value = statValue;
 
-        String suffix = (type.name().contains("CRIT")) ? "%" : "";
+        String suffix = (type.name().contains("CRIT")) || (type.name().equalsIgnoreCase("ATTACK_SPEED")) ? "%" : "";
 
         if (type == StatType.SPEED) {
             value *= 1000;

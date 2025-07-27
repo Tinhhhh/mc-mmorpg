@@ -3,7 +3,6 @@ package net.tinhvv.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import net.tinhvv.items.CustomItem;
-import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

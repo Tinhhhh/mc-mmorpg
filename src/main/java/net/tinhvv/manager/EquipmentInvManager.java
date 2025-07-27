@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class EquipmentManager {
+public class EquipmentInvManager {
 
     private static final Map<UUID, PlayerEquipment> equipmentMap = new HashMap<>();
 
@@ -32,7 +32,7 @@ public class EquipmentManager {
         PlayerEquipment data = equipmentMap.get(uuid);
 
         if (data == null) {
-            Bukkit.getLogger().warning("[EquipmentManager] Tried to save equipment for " + player.getName() + " but data is null.");
+            Bukkit.getLogger().warning("[EquipmentInvManager] Tried to save equipment for " + player.getName() + " but data is null.");
             return;
         }
 
@@ -46,9 +46,9 @@ public class EquipmentManager {
 
         try (FileWriter writer = new FileWriter(file)) {
             new GsonBuilder().setPrettyPrinting().create().toJson(json, writer);
-            Bukkit.getLogger().info("[EquipmentManager] Saved equipment for " + player.getName() + " to " + file.getName());
+            Bukkit.getLogger().info("[EquipmentInvManager] Saved equipment for " + player.getName() + " to " + file.getName());
         } catch (IOException e) {
-            Bukkit.getLogger().severe("[EquipmentManager] Failed to save equipment for " + player.getName());
+            Bukkit.getLogger().severe("[EquipmentInvManager] Failed to save equipment for " + player.getName());
             e.printStackTrace();
         }
     }
@@ -59,7 +59,7 @@ public class EquipmentManager {
         PlayerEquipment data = new PlayerEquipment();
 
         if (!file.exists()) {
-            Bukkit.getLogger().info("[EquipmentManager] No equipment file found for " + player.getName() + ". Using default.");
+            Bukkit.getLogger().info("[EquipmentInvManager] No equipment file found for " + player.getName() + ". Using default.");
             return data;
         }
 
@@ -71,9 +71,9 @@ public class EquipmentManager {
                     data.setItem(type, item);
                 }
             }
-            Bukkit.getLogger().info("[EquipmentManager] Loaded equipment for " + player.getName());
+            Bukkit.getLogger().info("[EquipmentInvManager] Loaded equipment for " + player.getName());
         } catch (IOException e) {
-            Bukkit.getLogger().severe("[EquipmentManager] Failed to load equipment for " + player.getName());
+            Bukkit.getLogger().severe("[EquipmentInvManager] Failed to load equipment for " + player.getName());
             e.printStackTrace();
         }
 

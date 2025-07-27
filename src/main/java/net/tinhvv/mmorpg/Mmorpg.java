@@ -5,10 +5,13 @@ import fr.minuskube.inv.InventoryManager;
 import net.tinhvv.commands.*;
 import net.tinhvv.listeners.InventoryListener;
 import net.tinhvv.listeners.PlayerJoinListener;
+import net.tinhvv.listeners.combat.CombatListener;
 import net.tinhvv.listeners.misc.MiscListener;
 import net.tinhvv.manager.CustomItemManager;
-import net.tinhvv.manager.EquipmentManager;
+import net.tinhvv.manager.EquipmentInvManager;
 import net.tinhvv.manager.StatManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Mmorpg extends JavaPlugin {
@@ -16,7 +19,7 @@ public final class Mmorpg extends JavaPlugin {
     private static Mmorpg instance;
     private static StatManager statManager;
     private static InventoryManager inventoryManager;
-    private static EquipmentManager equipmentManager;
+    private static EquipmentInvManager equipmentInvManager;
     private static CustomItemManager customItemManager;
 
     public static Mmorpg getInstance() {
@@ -31,8 +34,8 @@ public final class Mmorpg extends JavaPlugin {
         return inventoryManager;
     }
 
-    public static EquipmentManager getEquipmentManager() {
-        return equipmentManager;
+    public static EquipmentInvManager getEquipmentInvManager() {
+        return equipmentInvManager;
     }
 
     public static CustomItemManager getCustomItemManager() {
@@ -45,7 +48,7 @@ public final class Mmorpg extends JavaPlugin {
 
         // Khởi tạo các manager trước
         statManager = new StatManager();
-        equipmentManager = new EquipmentManager();
+        equipmentInvManager = new EquipmentInvManager();
         inventoryManager = new InventoryManager(this);
         customItemManager = new CustomItemManager();
 
@@ -57,12 +60,6 @@ public final class Mmorpg extends JavaPlugin {
         saveResource("gui/stats.yml", true);
         saveResource("gui/equipment.yml", true);
 
-        // Load dữ liệu cho tất cả player đang online
-//        for (Player player : Bukkit.getOnlinePlayers()) {
-//            statManager.load(player);
-//            equipmentManager.load(player);
-//            Mmorpg.getStatManager().updateFromEquipment(player);
-//        }
 
         // Đăng ký command
         BukkitCommandManager manager = new BukkitCommandManager(this);
@@ -76,17 +73,21 @@ public final class Mmorpg extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         getServer().getPluginManager().registerEvents(new MiscListener(), this);
+        getServer().getPluginManager().registerEvents(new CombatListener(), this);
+
+        // Load dữ liệu cho tất cả player đang online
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            equipmentInvManager.load(player);
+        }
     }
 
 
     @Override
     public void onDisable() {
         // Save dữ liệu cho tất cả player đang online
-//        for (Player player : Bukkit.getOnlinePlayers()) {
-//            Mmorpg.getStatManager().save(player);
-//            Mmorpg.getEquipmentManager().save(player);
-//        }
-
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Mmorpg.getEquipmentInvManager().save(player);
+        }
         getLogger().info("MMORPG plugin disabled.");
     }
 }

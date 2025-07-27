@@ -1,7 +1,6 @@
 package net.tinhvv.listeners.interact;
 
 import net.tinhvv.items.AbstractCustomItem;
-import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.listeners.EventRouter;
 import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.Material;

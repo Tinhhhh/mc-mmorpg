@@ -1,6 +1,5 @@
 package net.tinhvv.listeners.swap;
 
-import net.tinhvv.manager.CustomItemManager;
 import net.tinhvv.listeners.EventRouter;
 import net.tinhvv.mmorpg.Mmorpg;
 import org.bukkit.entity.Player;

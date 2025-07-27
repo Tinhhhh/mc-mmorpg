@@ -6,4 +6,5 @@ public interface CustomItem {
     ItemStack create();
     boolean isMatch(ItemStack item);
     String getId();
+    String getTagName();
 }

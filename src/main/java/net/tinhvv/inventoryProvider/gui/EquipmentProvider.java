@@ -115,9 +115,9 @@ public class EquipmentProvider implements InventoryProvider {
                     }
 
                     // Lưu vào equipment manager
-                    Mmorpg.getEquipmentManager().get(p).setItem(finalType, cursor.clone());
-                    Mmorpg.getEquipmentManager().save(p);
-                    Mmorpg.getStatManager().updateFromAllEquipment(p);
+                    Mmorpg.getEquipmentInvManager().get(p).setItem(finalType, cursor.clone());
+                    Mmorpg.getEquipmentInvManager().save(p);
+                    Mmorpg.getStatManager().calculatePlayerStats(p);
                     event.setCursor(null);
 
                     // 🟩 Reload GUI để hiển thị thay đổi
@@ -127,7 +127,7 @@ public class EquipmentProvider implements InventoryProvider {
                 else {
 
                     // Gỡ item cũ
-                    PlayerEquipment equipment = Mmorpg.getEquipmentManager().getOrCreate(player);
+                    PlayerEquipment equipment = Mmorpg.getEquipmentInvManager().getOrCreate(player);
                     ItemStack old = equipment.getItem(finalType);
 
                     if (old != null && old.getType() != Material.AIR) {
@@ -146,10 +146,10 @@ public class EquipmentProvider implements InventoryProvider {
                         }
                     }
 
-                    Mmorpg.getEquipmentManager().get(p).setItem(finalType, null);
+                    Mmorpg.getEquipmentInvManager().get(p).setItem(finalType, null);
                     // 🔁 Lưu sau khi gỡ trang bị
-                    Mmorpg.getEquipmentManager().save(p);
-                    Mmorpg.getStatManager().updateFromAllEquipment(p);
+                    Mmorpg.getEquipmentInvManager().save(p);
+                    Mmorpg.getStatManager().calculatePlayerStats(p);
                     EquipmentProvider.open(p);
                 }
             }));
@@ -174,7 +174,7 @@ public class EquipmentProvider implements InventoryProvider {
 
 
     private ItemStack GetEquipment(EquipmentType equipmentType, Player player) {
-        PlayerEquipment equipment = Mmorpg.getEquipmentManager().getOrCreate(player);
+        PlayerEquipment equipment = Mmorpg.getEquipmentInvManager().getOrCreate(player);
         if (equipment == null) return null;
 
         ItemStack item = equipment.getItem(equipmentType);

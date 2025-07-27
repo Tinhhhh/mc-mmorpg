@@ -14,13 +14,14 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class StatManager {
 
     private static final Logger LOGGER = Logger.getLogger(StatManager.class.getName());
 
     // Player stat data (base level of each stat)
-    private final Map<UUID, PlayerStatData> data = new ConcurrentHashMap<>();
+    private final Map<UUID, PlayerBaseStats> data = new ConcurrentHashMap<>();
 
     // Active modifiers (from items, buffs, effects...)
     private final Map<UUID, List<StatModifier>> modifierMap = new ConcurrentHashMap<>();
@@ -28,8 +29,8 @@ public class StatManager {
     /**
      * Get or create base stat data for a player
      */
-    public PlayerStatData get(Player player) {
-        return data.computeIfAbsent(player.getUniqueId(), k -> new PlayerStatData());
+    public PlayerBaseStats get(Player player) {
+        return data.computeIfAbsent(player.getUniqueId(), k -> new PlayerBaseStats());
     }
 
     /**
@@ -37,7 +38,7 @@ public class StatManager {
      */
     public void load(Player player) {
         StatDataFile dataFile = new StatDataFile(player.getUniqueId(), Mmorpg.getInstance().getDataFolder());
-        PlayerStatData statData = new PlayerStatData();
+        PlayerBaseStats statData = new PlayerBaseStats();
 
         Map<StatType, Double> loaded = dataFile.loadStats();
         for (Map.Entry<StatType, Double> entry : loaded.entrySet()) {
@@ -51,7 +52,7 @@ public class StatManager {
      * Unload player data (cleanup)
      */
     public void unload(Player player) {
-        PlayerStatData statData = data.remove(player.getUniqueId());
+        PlayerBaseStats statData = data.remove(player.getUniqueId());
         if (statData != null) {
             StatDataFile dataFile = new StatDataFile(player.getUniqueId(), Mmorpg.getInstance().getDataFolder());
             dataFile.saveStats(statData.getAll());
@@ -60,7 +61,7 @@ public class StatManager {
     }
 
     public void save(Player player) {
-        PlayerStatData statData = data.get(player.getUniqueId());
+        PlayerBaseStats statData = data.get(player.getUniqueId());
         if (statData != null) {
             System.out.println("[StatManager] Saving stats: " + statData.getAll());
             StatDataFile dataFile = new StatDataFile(player.getUniqueId(), Mmorpg.getInstance().getDataFolder());
@@ -68,61 +69,20 @@ public class StatManager {
         }
     }
 
+    public void setModifiers(UUID uuid, List<StatModifier> newModifiers) {
+        modifierMap.put(uuid, newModifiers);
+    }
+
 
     /**
      * Get total stat: base + equipment + extra modifiers
      */
-    public double getTotalStat(Player player, StatType stat) {
-        double total = get(player).getStat(stat);
-
-        // Modifiers từ item trang bị
-        PlayerEquipment equip = Mmorpg.getEquipmentManager().get(player);
-
-        //Logger
-        if (equip == null) {
-            LOGGER.warning("[StatManager] Equipment not found for player " + player.getUniqueId());
-        }
-
-        Map<EquipmentType, ItemStack> equipMap = equip.getAllEquipment();
-
-        for (Map.Entry<EquipmentType, ItemStack> entry : equipMap.entrySet()) {
-            ItemStack item = entry.getValue();
-            String itemName;
-
-            if (item == null || item.getType() == Material.AIR) {
-                itemName = "NONE";
-            } else if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                itemName = item.getItemMeta().getDisplayName();
-            } else {
-                itemName = item.getType().toString();
-            }
-
-            LOGGER.info("[" + player.getName() + "] item: " + itemName);
-        }
-        //Logger
-
-        for (ItemStack item : equip.getAllEquipped()) {
-            Optional<CustomItem> custom = Mmorpg.getCustomItemManager().match(item);
-            if (custom.isPresent() && custom.get() instanceof AbstractCustomItem aci) {
-                for (StatModifier mod : aci.getStatModifiers()) {
-                    if (mod.getStat() == stat) {
-                        total += mod.getValue();
-                        LOGGER.info("[StatManager] Adding modifier from custom item: " + mod.getSource() + " for stat " + stat + " with value " + mod.getValue());
-                    }
-                }
-            }
-        }
-
-        // Modifiers tạm thời (buff, skill, v.v.)
-        List<StatModifier> otherModifiers = modifierMap.getOrDefault(player.getUniqueId(), Collections.emptyList());
-        for (StatModifier mod : otherModifiers) {
-            if (mod.getStat() == stat) {
-                total += mod.getValue();
-                LOGGER.info("[StatManager] Adding modifier: " + mod.getSource() + " for stat " + stat + " with value " + mod.getValue());
-            }
-        }
-
-        return total;
+    public double getTotalFromOneStat(Player player, StatType stat) {
+        List<StatModifier> modifiers = calculatePlayerStats(player); // ← dùng lại luôn
+        return modifiers.stream()
+                .filter(mod -> mod.getStat() == stat)
+                .mapToDouble(StatModifier::getValue)
+                .sum();
     }
 
 
@@ -158,42 +118,87 @@ public class StatManager {
     }
 
 
-    public void updateFromAllEquipment(Player player) {
-        // Remove old modifiers
-        for (String slot : List.of("HEAD", "CHEST", "LEGS", "FEET")) {
-            removeModifierBySource(player, "equip_" + slot);
-        }
+    public List<StatModifier> calculatePlayerStats(Player player) {
+        List<StatModifier> playerModifiers = get(player).getBase();
 
-        // Apply modifiers from currently equipped armor
+//        Đọc chỉ số từ equipped armor
         PlayerInventory inv = player.getInventory();
-        applyItemModifier(player, inv.getHelmet(), "equip_HEAD");
-        applyItemModifier(player, inv.getChestplate(), "equip_CHEST");
-        applyItemModifier(player, inv.getLeggings(), "equip_LEGS");
-        applyItemModifier(player, inv.getBoots(), "equip_FEET");
-
-        // Apply to real gameplay
-        StatApplier.apply(player, this);
-    }
-
-    private void applyItemModifier(Player player, ItemStack item, String source) {
-        if (item == null || item.getType().isAir()) return;
-
-        List<StatModifier> modifiers = StatItemParser.parse(item, source);
-
-        // Nếu lore không có stat → fallback dùng stat mặc định của item vanilla
-        if (modifiers.isEmpty()) {
-            modifiers = VanillaArmorStats.getStats(item, source);
+        List<StatModifier> helmetModifiers = new ArrayList<>();
+        ItemStack helmet = inv.getHelmet();
+        if (helmet != null && helmet.getType() != Material.AIR) {
+            LOGGER.info("[StatManager] Applying helmet stats: " + helmet.getType());
+            helmetModifiers = StatItemParser.parse(helmet, "equip_HEAD");
         }
 
-        for (StatModifier mod : modifiers) {
-            addModifier(player, mod);
+        List<StatModifier> chestplateModifiers = new ArrayList<>();
+        ItemStack chestplate = inv.getChestplate();
+        if (chestplate != null && chestplate.getType() != Material.AIR) {
+            LOGGER.info("[StatManager] Applying chestplate stats: " + chestplate.getType());
+            chestplateModifiers = StatItemParser.parse(chestplate, "equip_CHEST");
         }
+
+        List<StatModifier> leggingsModifiers = new ArrayList<>();
+        ItemStack leggings = inv.getLeggings();
+        if (leggings != null && leggings.getType() != Material.AIR) {
+            LOGGER.info("[StatManager] Applying leggings stats: " + leggings.getType());
+            leggingsModifiers = StatItemParser.parse(leggings, "equip_LEGS");
+
+        }
+
+        List<StatModifier> bootsModifiers = new ArrayList<>();
+        ItemStack boots = inv.getBoots();
+        if (boots != null && boots.getType() != Material.AIR) {
+            LOGGER.info("[StatManager] Applying boots stats: " + boots.getType());
+            bootsModifiers = StatItemParser.parse(boots, "equip_FEET");
+        }
+
+        // Đọc chỉ số từ equipment
+        PlayerEquipment equip = Mmorpg.getEquipmentInvManager().get(player);
+        Map<EquipmentType, ItemStack> equipMap = equip.getAllEquipment();
+
+        //Lấy chỉ số từ equip
+
+        Map<EquipmentType, List<StatModifier>> equipModifiers = new EnumMap<>(EquipmentType.class);
+
+        for (EquipmentType type : equipMap.keySet()) {
+            ItemStack equipment = equipMap.get(type);
+            List<StatModifier> modifiers = new ArrayList<>();
+            if (equipment != null && equipment.getType() != Material.AIR) {
+                LOGGER.info("[StatManager] Item " + type.name().toLowerCase() + " stats: " + equipment.getType());
+                modifiers = Mmorpg.getCustomItemManager().getModifiersByItemStack(equipment);
+            }
+
+            if (!modifiers.isEmpty()) {
+                equipModifiers.put(type, modifiers);
+            }
+        }
+
+        //Đọc chỉ số từ các nguồn khác (future plans...)
+
+        // Combine all modifiers
+        List<StatModifier> allModifiers;
+        StatItemParser statItemParser = new StatItemParser();
+        allModifiers = statItemParser.merge(playerModifiers, helmetModifiers);
+        allModifiers = statItemParser.merge(allModifiers, chestplateModifiers);
+        allModifiers = statItemParser.merge(allModifiers, leggingsModifiers);
+        allModifiers = statItemParser.merge(allModifiers, bootsModifiers);
+
+        for (Map.Entry<EquipmentType, List<StatModifier>> entry : equipModifiers.entrySet()) {
+            allModifiers = statItemParser.merge(allModifiers, entry.getValue());
+        }
+
+//         Apply to real gameplay
+        clearModifiers(player);
+        setModifiers(player.getUniqueId(), allModifiers);
+        StatApplier.apply(player);
+
+        return allModifiers;
     }
 
     public List<StatModifier> getEquipmentModifiers(Player player) {
         List<StatModifier> modifiers = new ArrayList<>();
 
-        PlayerEquipment equipment = Mmorpg.getEquipmentManager().get(player);
+        PlayerEquipment equipment = Mmorpg.getEquipmentInvManager().get(player);
         if (equipment == null) return modifiers;
 
         for (EquipmentType type : EquipmentType.values()) {
@@ -208,6 +213,69 @@ public class StatManager {
         }
 
         return modifiers;
+    }
+
+    public void updateMainHandModifiers(Player player) {
+        // Bước 1: Remove modifier cũ từ tay chính
+        removeModifiersBySource(player, "main_hand");
+
+        // Bước 2: Kiểm tra vũ khí mới
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (item == null || item.getType().isAir()) return; // tay không → không add gì cả
+
+        // Kểm tra item có phải là vũ khí không
+        String itemSource = StatItemParser.getItemSource(item);
+
+        if (isWeapon(item)) {
+            LOGGER.warning("[StatManager] Item in main hand is not a weapon: " + item.getType());
+            return; // không phải vũ khí → không add gì cả
+        }
+
+        // Bước 3: Lấy modifier từ custom item hoặc vanilla
+        List<StatModifier> modifiers = Mmorpg.getCustomItemManager().getModifiersByItemStack(item);
+
+        // Bước 4: Thêm modifier mới
+        for (StatModifier mod : modifiers) {
+            addModifier(player, mod);
+        }
+    }
+
+    public void removeModifiersBySource(Player player, String source) {
+        UUID uuid = player.getUniqueId();
+        List<StatModifier> modifiers = modifierMap.getOrDefault(uuid, new ArrayList<>());
+
+        // Lọc những modifier KHÔNG phải từ source cần xóa
+        List<StatModifier> remaining = modifiers.stream()
+                .filter(mod -> !mod.getSource().equalsIgnoreCase(source))
+                .collect(Collectors.toList());
+
+        modifierMap.put(uuid, remaining);
+    }
+
+    public boolean isWeapon(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            LOGGER.warning("[StatManager] Item is null or air, cannot check if it's a weapon.");
+            return false;
+        }
+
+        // Kiểm tra xem item có phải là vũ khí không
+        String itemSource = StatItemParser.getItemSource(item);
+        if (itemSource.startsWith("VANILLA:")) {
+            if (itemSource.contains("_SWORD") || itemSource.contains("_AXE") || itemSource.contains("BOW")
+                    || itemSource.contains("TRIDENT") || itemSource.contains("MACE") || itemSource.contains("CROSSBOW")) {
+                LOGGER.info("[StatManager] Item " + item.getType() + " is recognized as a weapon: " + itemSource);
+            } else {
+                LOGGER.warning("[StatManager] Item " + item.getType() + " is not recognized as a weapon: " + itemSource);
+            }
+            return true;
+        }
+
+        if (itemSource.startsWith("CUSTOM:WEAPON_")) {
+            LOGGER.info("[StatManager] Item " + item.getType() + " is recognized as a custom weapon: " + itemSource);
+            return true;
+        }
+        LOGGER.warning("[StatManager] Item " + item.getType() + " type is not recognized as a weapon: " + itemSource);
+        return false;
     }
 
 
