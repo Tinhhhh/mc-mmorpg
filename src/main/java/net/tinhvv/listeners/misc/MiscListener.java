@@ -48,4 +48,9 @@ public class MiscListener implements Listener {
         }, 1L); // Delay 1 tick để server kịp xử lý death
     }
 
+    @EventHandler
+    public void onArmorEquip(PlayerItemDamageEvent event) {
+        Mmorpg.getStatManager().calculatePlayerStats(event.getPlayer());
+    }
+
 }

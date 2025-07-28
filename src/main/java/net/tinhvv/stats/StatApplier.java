@@ -14,14 +14,16 @@ public class StatApplier {
 
     private static final Logger LOGGER = Logger.getLogger(StatApplier.class.getName());
 
-    public static void apply(Player player) {
+    public static void applyAllStats(Player player) {
         List<StatModifier> modifiers = Mmorpg.getStatManager().getModifiers(player);
 
         for (StatModifier mod : modifiers) {
             StatType type = mod.getStat();
             double value = mod.getValue();
 
-            LOGGER.info("[StatApplier] Applying " + type.name() + " with value " + value + " to player " + player.getName());
+            if (type.name().equalsIgnoreCase(StatType.ATTACK_SPEED.toString())) {
+                LOGGER.info("[StatApplier] Applying " + type.name() + " with value " + value + " to player " + player.getName());
+            }
 
             switch (type) {
                 case HEALTH -> {
@@ -55,6 +57,15 @@ public class StatApplier {
         }
     }
 
+//    public static void applyAtkSpeed(Player player, double value) {
+//        AttributeInstance atkSpeed = player.getAttribute(Attribute.ATTACK_SPEED);
+//        if (atkSpeed != null) {
+//            atkSpeed.setBaseValue(value);
+//            LOGGER.info("[StatApplier] Applied ATTACK_SPEED: " + value + " to player " + player.getName());
+//        } else {
+//            LOGGER.warning("[StatApplier] ATTACK_SPEED attribute not found for player " + player.getName());
+//        }
+//    }
 
     private static int calculateRegenAmplifier(double maxHealth, double healthRegen) {
         double base = (1.5 + maxHealth / 100.0) * (healthRegen / 100.0);

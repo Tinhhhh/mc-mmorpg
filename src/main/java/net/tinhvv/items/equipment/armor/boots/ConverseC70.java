@@ -26,16 +26,16 @@ public class ConverseC70 extends AbstractCustomItem {
     protected List<String> getLore() {
         return StatFormat.lore(List.of(ChatColor.WHITE + "Converse Chuck 70 is classic",
                 "",
-                new StatModifier(StatType.SPEED, 0.5, getId()),
+                new StatModifier(StatType.SPEED, 0.2, getId()),
                 "",
                 ChatColor.GRAY + "Boots"
         ));
     }
 
     @Override
-    protected Map<StatType, Double> getBaseStats() {
+    public Map<StatType, Double> getBaseStats() {
         return Map.of(
-                StatType.SPEED, 0.002,
+                StatType.SPEED, 0.02,
                 StatType.ARMOR, 2.0,
                 StatType.TOUGHNESS, 0.5
         );

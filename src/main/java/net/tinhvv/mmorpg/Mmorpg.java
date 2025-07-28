@@ -12,6 +12,7 @@ import net.tinhvv.manager.EquipmentInvManager;
 import net.tinhvv.manager.StatManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Mmorpg extends JavaPlugin {
@@ -78,6 +79,11 @@ public final class Mmorpg extends JavaPlugin {
         // Load dữ liệu cho tất cả player đang online
         for (Player player : Bukkit.getOnlinePlayers()) {
             equipmentInvManager.load(player);
+            for (ItemStack itemStack : player.getInventory().getContents()) {
+                if (itemStack != null && Mmorpg.getCustomItemManager().match(itemStack).isPresent()) {
+                    Mmorpg.getCustomItemManager().reloadItemMetaIfCustom(itemStack);
+                }
+            }
         }
     }
 

@@ -14,9 +14,17 @@ public class StatModifier {
         this.source = source;
     }
 
-    public StatType getStat() { return stat; }
-    public double getValue() { return value; }
-    public String getSource() { return source; }
+    public StatType getStat() {
+        return stat;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public String getSource() {
+        return source;
+    }
 
     public static StatModifier getModifierByStatType(List<StatModifier> modifiers, StatType type) {
         for (StatModifier mod : modifiers) {
@@ -27,5 +35,9 @@ public class StatModifier {
         return null; // hoặc Optional.empty() nếu muốn xài Optional
     }
 
+    public static double getValueByStatType(List<StatModifier> modifiers, StatType type) {
+        StatModifier mod = getModifierByStatType(modifiers, type);
+        return mod != null ? mod.getValue() : 0.0; // trả về 0 nếu không tìm thấy
+    }
 
 }

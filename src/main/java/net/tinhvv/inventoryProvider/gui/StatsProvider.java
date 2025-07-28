@@ -29,8 +29,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class StatsProvider implements InventoryProvider {
@@ -122,6 +120,7 @@ public class StatsProvider implements InventoryProvider {
 
         List<String> lore = new ArrayList<>();
         for (StatType stat : StatType.values()) {
+            if (stat == StatType.BASE_DAMAGE) continue;
             double value = Mmorpg.getStatManager().getTotalFromOneStat(player, stat);
             lore.add(StatFormat.format(player, stat, value));
         }
@@ -152,25 +151,6 @@ public class StatsProvider implements InventoryProvider {
 
         stack.setItemMeta(meta);
         return stack;
-    }
-
-    private String processStatPlaceholder(String input, Player player) {
-        Matcher matcher = Pattern.compile("\\{stat:([A-Z_]+)}").matcher(input);
-        StringBuffer sb = new StringBuffer();
-
-        while (matcher.find()) {
-            String key = matcher.group(1);
-            try {
-                StatType type = StatType.valueOf(key);
-                double value = Mmorpg.getStatManager().getTotalFromOneStat(player, type);
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(StatFormat.format(player, type, value)));
-            } catch (IllegalArgumentException e) {
-                matcher.appendReplacement(sb, Matcher.quoteReplacement("{invalid:" + key + "}"));
-            }
-        }
-
-        matcher.appendTail(sb);
-        return sb.toString();
     }
 
     @Override

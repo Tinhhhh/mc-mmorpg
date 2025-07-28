@@ -14,7 +14,7 @@ import java.util.Map;
 public class Seashell extends AbstractCustomItem {
 
     public Seashell() {
-        super("Seashell", Material.CLAY_BALL, EquipmentType.AMULET.toString());
+        super("seashell", Material.CLAY_BALL, EquipmentType.AMULET.toString());
     }
 
     @Override
@@ -37,7 +37,7 @@ public class Seashell extends AbstractCustomItem {
     }
 
     @Override
-    protected Map<StatType, Double> getBaseStats() {
+    public Map<StatType, Double> getBaseStats() {
         return Map.of(
                 StatType.HEALTH, 10.0,
                 StatType.STRENGTH, 5.0

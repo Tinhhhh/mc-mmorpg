@@ -12,7 +12,6 @@ public class StatFormat {
 
     public static List<String> lore(List<Object> lines) {
         return lines.stream()
-                .filter(line -> !(line instanceof StatModifier mod) || mod.getStat() != StatType.BASE_DAMAGE)
                 .map(line -> {
                     if (line instanceof StatModifier mod) {
                         StatType type = mod.getStat();
@@ -26,8 +25,8 @@ public class StatFormat {
                             value *= 100;
                         }
 
-                        String formatted = (value == (long) value)
-                                ? String.format("%d", (long) value)
+                        String formatted = (value % 1 == 0)
+                                ? Integer.toString((int) value)
                                 : String.format("%.2f", value);
 
                         return color + icon + " " + capitalize(type.name()) + " +" + formatted + suffix;
@@ -99,21 +98,22 @@ public class StatFormat {
     }
 
     public static String format(Player player, StatType type, double statValue) {
-        if (type == StatType.BASE_DAMAGE) return "";
 
         String color = getColor(type);
         String icon = getIcon(type);
         double value = statValue;
 
-        String suffix = (type.name().contains("CRIT")) || (type.name().equalsIgnoreCase("ATTACK_SPEED")) ? "%" : "";
+        boolean hasPercent = type.name().contains("CRIT") || type == StatType.ATTACK_SPEED;
 
         if (type == StatType.SPEED) {
             value *= 1000;
         }
 
-        String formatted = (value == (long) value) ? String.format("%d", (long) value) : String.format("%.2f", value);
+        String formatted = (value % 1 == 0)
+                ? Integer.toString((int) value)
+                : String.format("%.2f", value);
 
-        return color + icon + " " + capitalize(type.name()) + " " + formatted + suffix;
+        return color + icon + " " + capitalize(type.name()) + " " + formatted + (hasPercent ? "%" : "");
     }
 
 

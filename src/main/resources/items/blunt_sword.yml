@@ -1,0 +1,13 @@
+id: blunt_sword
+material: IRON_SWORD
+type: WEAPON_MELEE
+display_name: "§7Blunt Sword"
+lore:
+  - "§dA Chinese sword with a blunt edge"
+  - "❁ Strength +2"
+  - "⚔ Attack Speed +200"
+  - "§lSword"
+stats:
+  BASE_DAMAGE: 5.0
+  STRENGTH: 2.0
+  ATTACK_SPEED: 200.0
